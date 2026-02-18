@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust ISO Tracking System</title>
+  <meta name="description" content="Sistema di gestione certificazioni ISO per consulenti">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Smooth transitions */
+    * { scroll-behavior: smooth; }
+
+    /* Form styles */
+    .form-label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.375rem;
+    }
+    .form-input {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #1e293b;
+      background-color: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    select.form-input {
+      appearance: auto;
+    }
+    textarea.form-input {
+      resize: vertical;
+    }
+
+    /* Button styles */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .btn-primary:hover { background-color: #1d4ed8; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #475569;
+      background-color: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary:hover { background-color: #f8fafc; border-color: #cbd5e1; }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #fff;
+      background-color: #dc2626;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .btn-danger:hover { background-color: #b91c1c; }
+
+    /* Sidebar transition */
+    #sidebar {
+      transition: transform 0.3s ease;
+    }
+
+    /* Status radio active animation */
+    .status-radio {
+      transition: all 0.2s ease;
+    }
+    .status-radio:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Print styles */
+    @media print {
+      #sidebar, #header, #toast-container { display: none !important; }
+      #main-content { margin-left: 0 !important; }
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 font-sans antialiased">
+  <div class="h-full flex flex-col">
+
+    <!-- Header -->
+    <header id="header" class="bg-white border-b border-slate-200 px-4 h-14 flex items-center justify-between flex-shrink-0 z-30">
+      <div class="flex items-center gap-3">
+        <!-- Mobile menu toggle -->
+        <button id="toggle-sidebar" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-600">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="font-bold text-slate-800 hidden sm:block">Trust ISO</span>
+        </div>
+
+        <!-- Active project info -->
+        <div id="header-project-info" class="hidden items-center gap-2 ml-4 pl-4 border-l border-slate-200">
+          <span id="header-project-name" class="text-sm font-medium text-slate-700"></span>
+          <span id="header-phase" class="text-xs px-2 py-0.5 rounded-full"></span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Search -->
+        <div class="relative hidden md:block">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input id="quick-search" type="text" placeholder="Cerca requisito..."
+                 class="pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg w-56 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100">
+          <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-200 max-h-64 overflow-y-auto z-50"></div>
+        </div>
+
+        <!-- Auto-save indicator -->
+        <span id="autosave-indicator" class="text-xs text-emerald-600 opacity-0 transition-opacity">Salvato</span>
+
+        <!-- Actions -->
+        <button id="btn-export" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500" title="Esporta dati">
+          <i data-lucide="download" class="w-4 h-4"></i>
+        </button>
+        <button id="btn-import" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500" title="Importa dati">
+          <i data-lucide="upload" class="w-4 h-4"></i>
+        </button>
+
+        <!-- User menu -->
+        <div class="hidden items-center gap-2 ml-2 pl-2 border-l border-slate-200" id="user-menu">
+          <span id="user-name-display" class="text-xs text-slate-500 hidden sm:block"></span>
+          <button id="btn-logout" class="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors" title="Esci">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+      <!-- Sidebar overlay (mobile) -->
+      <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+
+      <!-- Sidebar -->
+      <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex-shrink-0 overflow-y-auto z-40
+                                  fixed lg:static inset-y-14 left-0 -translate-x-full lg:translate-x-0">
+        <div class="p-3 space-y-1">
+          <nav id="sidebar-nav">
+            <!-- Populated by JS -->
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main id="main-content" class="flex-1 overflow-y-auto">
+        <!-- Populated by JS -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-16 right-4 z-50 flex flex-col items-end"></div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-backdrop absolute inset-0 bg-black/40"></div>
+    <div class="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+      <div class="p-5">
+        <h2 id="modal-title" class="text-lg font-semibold text-slate-800 mb-4"></h2>
+        <div id="modal-body"></div>
+        <div id="modal-actions" class="mt-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (order matters: iso data -> api client -> auth -> views -> pdf -> app) -->
+  <script src="data/iso9001.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/pdf-export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

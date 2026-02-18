@@ -1,0 +1,19 @@
+{
+  "name": "trust-iso-tracking-system",
+  "version": "2.0.0",
+  "description": "Sistema di gestione certificazioni ISO per consulenti",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": ["iso", "9001", "certification", "audit", "quality-management"],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
