@@ -12,7 +12,7 @@ const AuthUI = {
 
         <!-- Logo -->
         <div class="text-center mb-8">
-          <img src="/img/logo.png" alt="Trust ISO" class="w-16 h-16 object-contain mx-auto mb-4">
+          <img src="/img/logo.png" alt="Trust ISO" class="w-32 h-32 object-contain mx-auto mb-4">
           <h1 class="text-2xl font-bold text-slate-800">Trust ISO Tracking System</h1>
           <p class="text-slate-500 text-sm mt-1">Sistema di Gestione Certificazioni ISO</p>
         </div>

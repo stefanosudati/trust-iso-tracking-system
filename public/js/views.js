@@ -109,7 +109,7 @@ const Views = {
     <div class="p-6 space-y-6">
       <div>
         <div class="flex items-center gap-3">
-          <img src="/img/logo.png" alt="Trust ISO" class="w-10 h-10 object-contain">
+          <img src="/img/logo.png" alt="Trust ISO" class="w-20 h-20 object-contain">
           <div>
             <h1 class="text-2xl font-bold text-slate-800">Trust ISO Tracking System</h1>
             <p class="text-slate-500 mt-1">Sistema di gestione certificazioni ISO per consulenti</p>
