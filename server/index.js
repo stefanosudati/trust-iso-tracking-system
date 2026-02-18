@@ -3,9 +3,10 @@ const express = require('express');
 const path = require('path');
 
 // Validate required env vars
-if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 16) {
-  console.error('ERRORE: JWT_SECRET non configurato o troppo corto (min 16 caratteri).');
-  console.error('Imposta JWT_SECRET nel file .env o come variabile d\'ambiente.');
+if (!process.env.JWT_SECRET) {
+  console.error('ERRORE FATALE: JWT_SECRET non configurato.');
+  console.error('Imposta JWT_SECRET come variabile d\'ambiente.');
+  console.error('ENV vars disponibili:', Object.keys(process.env).filter(k => !k.startsWith('npm_')).join(', '));
   process.exit(1);
 }
 
