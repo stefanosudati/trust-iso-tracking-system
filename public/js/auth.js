@@ -19,7 +19,7 @@ const AuthUI = {
 
         <!-- Tab switcher -->
         <div class="bg-white rounded-xl border border-slate-200 p-1 flex mb-6">
-          <button id="tab-login" class="auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all">
+          <button id="tab-login" class="auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all" style="background-color: var(--primary); color: white;">
             Accedi
           </button>
           <button id="tab-register" class="auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all">
@@ -149,13 +149,21 @@ const AuthUI = {
     if (panel === 'login') {
       loginPanel.classList.remove('hidden');
       registerPanel.classList.add('hidden');
-      loginTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all';
+      loginTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all';
+      loginTab.style.backgroundColor = 'var(--primary)';
+      loginTab.style.color = 'white';
       registerTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all';
+      registerTab.style.backgroundColor = '';
+      registerTab.style.color = '';
     } else {
       registerPanel.classList.remove('hidden');
       loginPanel.classList.add('hidden');
-      registerTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all';
+      registerTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all';
+      registerTab.style.backgroundColor = 'var(--primary)';
+      registerTab.style.color = 'white';
       loginTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all';
+      loginTab.style.backgroundColor = '';
+      loginTab.style.color = '';
     }
   }
 };

@@ -8,6 +8,9 @@ const App = {
   sidebarOpen: true,
 
   async init() {
+    // Apply saved theme immediately (before any rendering)
+    ThemeManager.loadFromStorage();
+
     // Auth gate: show login screen if not authenticated
     if (!ApiClient.isAuthenticated()) {
       AuthUI.render();
@@ -25,16 +28,16 @@ const App = {
       }
     } catch (err) {
       console.error('Errore caricamento dati:', err);
-      // If token is invalid, the API client will auto-logout
     }
 
-    // Show user info in header
+    // Show user info in header + sync theme from server
     const user = ApiClient.getUser();
     if (user) {
       const nameEl = document.getElementById('user-name-display');
       const menuEl = document.getElementById('user-menu');
       if (nameEl) nameEl.textContent = user.name || user.email;
       if (menuEl) { menuEl.classList.remove('hidden'); menuEl.classList.add('flex'); }
+      if (user.theme) ThemeManager.syncFromUser(user.theme);
     }
 
     this.bindGlobalEvents();
@@ -94,8 +97,8 @@ const App = {
         html += this.sidebarItem('project-detail', 'Dati Progetto', 'clipboard');
 
         // Divider
-        html += '<div class="my-3 border-t border-slate-200"></div>';
-        html += '<div class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Gap Analysis</div>';
+        html += '<div class="my-3" style="border-top: 1px solid var(--sidebar-border);"></div>';
+        html += '<div class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider" style="color: var(--sidebar-section);">Gap Analysis</div>';
 
         // Clauses with progress
         const stats = Store.getProjectStats(project.id);
@@ -104,10 +107,15 @@ const App = {
           const progress = clauseStats ?
             Math.round(((clauseStats.implemented + clauseStats.partial * 0.5) / Math.max(clauseStats.total - clauseStats.notApplicable, 1)) * 100) : 0;
 
+          const clauseActive = this.currentView === 'clause' && this.currentClause === clause.number;
           html += `
             <a href="#" data-view="clause" data-clause="${clause.number}"
-               class="sidebar-link group flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors
-                      ${this.currentView === 'clause' && this.currentClause === clause.number ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
+               class="sidebar-link group flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${clauseActive ? 'font-medium' : ''}"
+               style="${clauseActive
+                 ? 'background-color: var(--sidebar-active-bg); color: var(--sidebar-active-text);'
+                 : 'color: var(--sidebar-text);'}"
+               onmouseenter="if(!this.classList.contains('font-medium'))this.style.backgroundColor='var(--sidebar-hover-bg)'"
+               onmouseleave="if(!this.classList.contains('font-medium'))this.style.backgroundColor=''">
               <span class="flex-1">
                 <span class="font-medium">${clause.number}.</span> ${this.truncate(clause.title, 22)}
               </span>
@@ -116,7 +124,7 @@ const App = {
         }
 
         // Divider
-        html += '<div class="my-3 border-t border-slate-200"></div>';
+        html += '<div class="my-3" style="border-top: 1px solid var(--sidebar-border);"></div>';
 
         // Documents, Timeline, Reports
         html += this.sidebarItem('documents', 'Documenti', 'file-text');
@@ -124,6 +132,10 @@ const App = {
         html += this.sidebarItem('reports', 'Report', 'bar-chart-2');
       }
     }
+
+    // Settings (always visible)
+    html += '<div class="my-3" style="border-top: 1px solid var(--sidebar-border);"></div>';
+    html += this.sidebarItem('settings', 'Impostazioni', 'settings');
 
     nav.innerHTML = html;
 
@@ -143,11 +155,15 @@ const App = {
     const active = this.currentView === view;
     return `
       <a href="#" data-view="${view}"
-         class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors
-                ${active ? 'bg-blue-50 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
-        <i data-lucide="${icon}" class="w-4 h-4 ${active ? 'text-blue-600' : 'text-slate-400'}"></i>
+         class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${active ? 'font-medium' : ''}"
+         style="${active
+           ? 'background-color: var(--sidebar-active-bg); color: var(--sidebar-active-text);'
+           : 'color: var(--sidebar-text);'}"
+         onmouseenter="if(!this.classList.contains('font-medium'))this.style.backgroundColor='var(--sidebar-hover-bg)'"
+         onmouseleave="if(!this.classList.contains('font-medium'))this.style.backgroundColor=''">
+        <i data-lucide="${icon}" class="w-4 h-4" style="color: ${active ? 'var(--sidebar-active-icon)' : 'inherit'};"></i>
         <span class="flex-1">${label}</span>
-        ${badge ? '<span class="w-2 h-2 rounded-full bg-blue-500"></span>' : ''}
+        ${badge ? '<span class="w-2 h-2 rounded-full" style="background-color: var(--primary);"></span>' : ''}
       </a>`;
   },
 
@@ -199,6 +215,10 @@ const App = {
       case 'reports':
         main.innerHTML = Views.reports(project);
         Views.bindReports(project);
+        break;
+      case 'settings':
+        main.innerHTML = Views.settings();
+        Views.bindSettings();
         break;
       default:
         main.innerHTML = Views.dashboard(project);
@@ -271,8 +291,9 @@ const App = {
 
     container.classList.remove('hidden');
     container.innerHTML = results.map(r => `
-      <a href="#" data-req="${r.id}" class="search-result block px-4 py-2 hover:bg-blue-50 transition-colors border-b border-slate-100 last:border-0">
-        <span class="font-medium text-blue-600">${r.id}</span>
+      <a href="#" data-req="${r.id}" class="search-result block px-4 py-2 transition-colors border-b border-slate-100 last:border-0"
+         style="cursor:pointer" onmouseenter="this.style.backgroundColor='var(--primary-lighter)'" onmouseleave="this.style.backgroundColor=''">
+        <span class="font-medium" style="color: var(--primary-text-light);">${r.id}</span>
         <span class="text-sm text-slate-600 ml-2">${this.truncate(r.title, 50)}</span>
       </a>
     `).join('');
@@ -414,11 +435,12 @@ const App = {
     const colors = {
       success: 'bg-emerald-500',
       error: 'bg-red-500',
-      info: 'bg-blue-500',
       warning: 'bg-amber-500'
     };
     const toast = document.createElement('div');
-    toast.className = `${colors[type] || colors.info} text-white px-4 py-3 rounded-lg shadow-lg mb-2 transform transition-all duration-300 translate-x-full`;
+    const bgClass = colors[type] || '';
+    toast.className = `${bgClass} text-white px-4 py-3 rounded-lg shadow-lg mb-2 transform transition-all duration-300 translate-x-full`;
+    if (type === 'info' || !bgClass) toast.style.backgroundColor = 'var(--primary)';
     toast.textContent = message;
     container.appendChild(toast);
     requestAnimationFrame(() => toast.classList.remove('translate-x-full'));

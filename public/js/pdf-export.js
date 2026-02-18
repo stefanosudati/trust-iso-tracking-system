@@ -3,6 +3,15 @@
  */
 const PDFExport = {
 
+  _primaryRGB() {
+    const rgb = getComputedStyle(document.documentElement).getPropertyValue('--primary-rgb').trim();
+    if (rgb) {
+      const parts = rgb.split(',').map(s => parseInt(s.trim()));
+      if (parts.length === 3 && parts.every(n => !isNaN(n))) return parts;
+    }
+    return [37, 99, 235];
+  },
+
   _initDoc(title) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
@@ -11,8 +20,8 @@ const PDFExport = {
   },
 
   _header(doc, title, subtitle, project) {
-    // Blue header bar
-    doc.setFillColor(37, 99, 235);
+    // Themed header bar
+    doc.setFillColor(...this._primaryRGB());
     doc.rect(0, 0, 210, 35, 'F');
 
     doc.setTextColor(255, 255, 255);
@@ -119,7 +128,7 @@ const PDFExport = {
         doc.circle(19, y - 1, 2, 'F');
 
         doc.setFontSize(9);
-        doc.setTextColor(37, 99, 235);
+        doc.setTextColor(...this._primaryRGB());
         doc.text(req.id, 24, y);
         doc.setTextColor(30, 41, 59);
         doc.text(req.title, 38, y);
@@ -199,7 +208,7 @@ const PDFExport = {
         (ev.actions || []).forEach(action => {
           y = this._checkPageBreak(doc, y);
           doc.setFontSize(8);
-          doc.setTextColor(37, 99, 235);
+          doc.setTextColor(...this._primaryRGB());
           doc.text(req.id, 17, y);
           doc.setTextColor(30, 41, 59);
           const actionLines = doc.splitTextToSize(action.text, 80);
@@ -261,7 +270,7 @@ const PDFExport = {
     if (stats) {
       // Big numbers
       doc.setFontSize(14);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(...this._primaryRGB());
       doc.text(`${stats.compliancePercent}%`, 15, y);
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
@@ -269,7 +278,7 @@ const PDFExport = {
       y += 8;
 
       doc.setFontSize(14);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(...this._primaryRGB());
       doc.text(`${stats.progressPercent}%`, 15, y);
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
@@ -295,7 +304,8 @@ const PDFExport = {
         doc.setFillColor(226, 232, 240);
         doc.rect(130, y - 3, 40, 4, 'F');
         if (progress > 0) {
-          doc.setFillColor(progress === 100 ? 22 : 37, progress === 100 ? 163 : 99, progress === 100 ? 74 : 235);
+          const [pr, pg, pb] = this._primaryRGB();
+          doc.setFillColor(progress === 100 ? 22 : pr, progress === 100 ? 163 : pg, progress === 100 ? 74 : pb);
           doc.rect(130, y - 3, 40 * progress / 100, 4, 'F');
         }
         doc.text(`${progress}%`, 175, y);

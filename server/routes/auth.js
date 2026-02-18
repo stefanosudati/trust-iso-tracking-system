@@ -30,7 +30,7 @@ router.post('/register', (req, res) => {
     const token = signToken(result.lastInsertRowid);
     res.status(201).json({
       token,
-      user: { id: result.lastInsertRowid, email: email.toLowerCase().trim(), name: name.trim() }
+      user: { id: result.lastInsertRowid, email: email.toLowerCase().trim(), name: name.trim(), theme: 'default' }
     });
   } catch (err) {
     if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
@@ -58,17 +58,28 @@ router.post('/login', (req, res) => {
   const token = signToken(user.id);
   res.json({
     token,
-    user: { id: user.id, email: user.email, name: user.name }
+    user: { id: user.id, email: user.email, name: user.name, theme: user.theme || 'default' }
   });
 });
 
 // GET /api/auth/me
 router.get('/me', requireAuth, (req, res) => {
-  const user = db.prepare('SELECT id, email, name, created_at FROM users WHERE id = ?').get(req.userId);
+  const user = db.prepare('SELECT id, email, name, theme, created_at FROM users WHERE id = ?').get(req.userId);
   if (!user) {
     return res.status(404).json({ error: 'Utente non trovato' });
   }
   res.json({ user });
+});
+
+// PUT /api/auth/theme
+router.put('/theme', requireAuth, (req, res) => {
+  const { theme } = req.body;
+  const validThemes = ['default', 'trust-corporate', 'ocean', 'forest', 'slate'];
+  if (!theme || !validThemes.includes(theme)) {
+    return res.status(400).json({ error: 'Tema non valido' });
+  }
+  db.prepare('UPDATE users SET theme = ? WHERE id = ?').run(theme, req.userId);
+  res.json({ theme });
 });
 
 module.exports = router;

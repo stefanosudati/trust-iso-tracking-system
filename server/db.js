@@ -55,6 +55,13 @@ db.exec(`
   );
 `);
 
+// Migrations
+try {
+  db.exec(`ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'default'`);
+} catch (e) {
+  // Column already exists — ignore
+}
+
 console.log(`Database SQLite inizializzato: ${DB_PATH}`);
 
 module.exports = db;

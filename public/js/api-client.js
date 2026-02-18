@@ -24,6 +24,9 @@ const ApiClient = {
     this._user = user;
     localStorage.setItem('trust_iso_token', token);
     localStorage.setItem('trust_iso_user', JSON.stringify(user));
+    if (user?.theme) {
+      ThemeManager.syncFromUser(user.theme);
+    }
   },
 
   clearAuth() {

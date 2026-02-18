@@ -32,6 +32,36 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 
   <style>
+    /* ─── Theme CSS Variables (defaults = Blue) ─── */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #dbeafe;
+      --primary-lighter: #eff6ff;
+      --primary-text: #1d4ed8;
+      --primary-text-light: #2563eb;
+      --primary-rgb: 37, 99, 235;
+      --sidebar-bg: #ffffff;
+      --sidebar-text: #475569;
+      --sidebar-hover-bg: #f8fafc;
+      --sidebar-active-bg: #eff6ff;
+      --sidebar-active-text: #1d4ed8;
+      --sidebar-active-icon: #2563eb;
+      --sidebar-border: #e2e8f0;
+      --sidebar-section: #64748b;
+      --header-bg: #ffffff;
+      --header-border: #e2e8f0;
+      --body-bg: #f8fafc;
+      --focus-border: #60a5fa;
+      --focus-ring: rgba(59, 130, 246, 0.1);
+      --badge-bg: #dbeafe;
+      --badge-text: #1d4ed8;
+      --progress-bar: #3b82f6;
+      --chart-fill: rgba(37, 99, 235, 0.15);
+      --chart-stroke: #2563eb;
+      --app-title: #1e293b;
+    }
+
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -63,8 +93,8 @@
     }
     .form-input:focus {
       outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
     select.form-input {
       appearance: auto;
@@ -82,13 +112,13 @@
       font-size: 0.875rem;
       font-weight: 500;
       color: #fff;
-      background-color: #2563eb;
+      background-color: var(--primary);
       border: none;
       border-radius: 0.5rem;
       cursor: pointer;
       transition: background-color 0.15s ease;
     }
-    .btn-primary:hover { background-color: #1d4ed8; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
 
     .btn-secondary {
       display: inline-flex;
@@ -135,18 +165,34 @@
       transform: translateY(-1px);
     }
 
+    /* Themed checkbox accent */
+    .themed-checkbox { accent-color: var(--primary); }
+
     /* Print styles */
     @media print {
       #sidebar, #header, #toast-container { display: none !important; }
       #main-content { margin-left: 0 !important; }
     }
   </style>
+
+  <!-- Anti-FOUC: apply saved theme before body renders -->
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('trust_iso_theme');
+        if (t && t !== 'default') {
+          var v = localStorage.getItem('trust_iso_theme_vars');
+          if (v) { var o = JSON.parse(v), r = document.documentElement; for (var k in o) r.style.setProperty(k, o[k]); }
+        }
+      } catch(e){}
+    })();
+  </script>
 </head>
-<body class="h-full bg-slate-50 font-sans antialiased">
+<body class="h-full font-sans antialiased" style="background-color: var(--body-bg);">
   <div class="h-full flex flex-col">
 
     <!-- Header -->
-    <header id="header" class="bg-white border-b border-slate-200 px-4 h-14 flex items-center justify-between flex-shrink-0 z-30">
+    <header id="header" class="px-4 h-14 flex items-center justify-between flex-shrink-0 z-30" style="background-color: var(--header-bg); border-bottom: 1px solid var(--header-border);">
       <div class="flex items-center gap-3">
         <!-- Mobile menu toggle -->
         <button id="toggle-sidebar" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-600">
@@ -156,7 +202,7 @@
         <!-- Logo -->
         <div class="flex items-center gap-2">
           <img src="/img/logo.png" alt="Trust ISO" class="w-8 h-8 object-contain">
-          <span class="font-bold text-slate-800 hidden sm:block">Trust ISO Tracking System</span>
+          <span class="font-bold hidden sm:block" style="color: var(--app-title);">Trust ISO Tracking System</span>
         </div>
 
         <!-- Active project info -->
@@ -171,7 +217,7 @@
         <div class="relative hidden md:block">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
           <input id="quick-search" type="text" placeholder="Cerca requisito..."
-                 class="pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg w-56 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100">
+                 class="pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg w-56 focus:outline-none" style="--tw-ring-color: var(--focus-ring);" onfocus="this.style.borderColor='var(--focus-border)';this.style.boxShadow='0 0 0 2px var(--focus-ring)'" onblur="this.style.borderColor='';this.style.boxShadow=''">
           <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-200 max-h-64 overflow-y-auto z-50"></div>
         </div>
 
@@ -203,8 +249,9 @@
       <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
 
       <!-- Sidebar -->
-      <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex-shrink-0 overflow-y-auto z-40
-                                  fixed lg:static inset-y-14 left-0 -translate-x-full lg:translate-x-0">
+      <aside id="sidebar" class="w-64 flex-shrink-0 overflow-y-auto z-40
+                                  fixed lg:static inset-y-14 left-0 -translate-x-full lg:translate-x-0"
+             style="background-color: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border);">
         <div class="p-3 space-y-1">
           <nav id="sidebar-nav">
             <!-- Populated by JS -->
@@ -234,9 +281,10 @@
     </div>
   </div>
 
-  <!-- Scripts (order matters: iso data -> api client -> auth -> views -> pdf -> app) -->
+  <!-- Scripts (order matters: iso data -> api client -> themes -> auth -> views -> pdf -> app) -->
   <script src="data/iso9001.js"></script>
   <script src="js/api-client.js"></script>
+  <script src="js/themes.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/views.js"></script>
   <script src="js/pdf-export.js"></script>

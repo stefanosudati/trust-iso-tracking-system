@@ -50,14 +50,15 @@ const Views = {
               return `
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <a href="#" data-view="clause" data-clause="${cl.number}" class="text-sm text-slate-700 hover:text-blue-600 transition-colors">
+                  <a href="#" data-view="clause" data-clause="${cl.number}" class="text-sm text-slate-700 transition-colors"
+                     onmouseenter="this.style.color='var(--primary-text-light)'" onmouseleave="this.style.color=''">
                     <span class="font-medium">${cl.number}.</span> ${cl.title}
                   </a>
                   <span class="text-xs font-medium ${progress === 100 ? 'text-emerald-600' : 'text-slate-500'}">${progress}%</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2">
-                  <div class="h-2 rounded-full transition-all duration-500 ${progress === 100 ? 'bg-emerald-500' : progress > 50 ? 'bg-blue-500' : progress > 0 ? 'bg-amber-500' : 'bg-slate-200'}"
-                       style="width: ${progress}%"></div>
+                  <div class="h-2 rounded-full transition-all duration-500 ${progress === 100 ? 'bg-emerald-500' : progress > 0 && progress <= 50 ? 'bg-amber-500' : progress === 0 ? 'bg-slate-200' : ''}"
+                       style="width: ${progress}%;${progress > 50 && progress < 100 ? ' background-color: var(--progress-bar);' : ''}"></div>
                 </div>
               </div>`;
             }).join('') || ''}
@@ -121,8 +122,9 @@ const Views = {
         <h2 class="text-lg font-semibold text-slate-700 mb-4">Certificazioni Disponibili</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           ${CERTIFICATIONS.map(cert => `
-          <div class="bg-white rounded-xl border border-slate-200 p-5 ${cert.comingSoon ? 'opacity-60' : 'hover:border-blue-300 hover:shadow-md cursor-pointer'} transition-all cert-card"
-               data-cert-id="${cert.id}" ${cert.comingSoon ? '' : ''}>
+          <div class="bg-white rounded-xl border border-slate-200 p-5 ${cert.comingSoon ? 'opacity-60' : 'cursor-pointer'} transition-all cert-card"
+               data-cert-id="${cert.id}"
+               ${cert.comingSoon ? '' : `onmouseenter="this.style.borderColor='var(--primary-light)';this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,.1)'" onmouseleave="this.style.borderColor='';this.style.boxShadow=''"`}>
             <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background-color: ${cert.color}15">
               <i data-lucide="${cert.icon === 'shield-check' ? 'shield-check' : cert.icon === 'leaf' ? 'leaf' : cert.icon === 'hard-hat' ? 'hard-hat' : 'lock'}"
                  class="w-6 h-6" style="color: ${cert.color}"></i>
@@ -131,7 +133,7 @@ const Views = {
             <p class="text-sm text-slate-500 mt-1">${cert.fullName}</p>
             ${cert.comingSoon ?
               '<span class="inline-block mt-3 text-xs font-medium bg-slate-100 text-slate-500 px-2 py-1 rounded">Prossimamente</span>' :
-              `<span class="inline-block mt-3 text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">${countRequirements(cert.clauses)} requisiti</span>`
+              `<span class="inline-block mt-3 text-xs font-medium px-2 py-1 rounded" style="background-color: var(--badge-bg); color: var(--badge-text);">${countRequirements(cert.clauses)} requisiti</span>`
             }
           </div>
           `).join('')}
@@ -168,7 +170,7 @@ const Views = {
           <div class="hidden sm:block w-32">
             <div class="flex items-center gap-2">
               <div class="flex-1 bg-slate-100 rounded-full h-1.5">
-                <div class="h-1.5 rounded-full bg-blue-500" style="width:${stats?.progressPercent || 0}%"></div>
+                <div class="h-1.5 rounded-full" style="background-color: var(--progress-bar); width:${stats?.progressPercent || 0}%"></div>
               </div>
               <span class="text-xs text-slate-500">${stats?.progressPercent || 0}%</span>
             </div>
@@ -182,16 +184,17 @@ const Views = {
   _statCard(title, value, subtitle, icon, color) {
     const colors = {
       emerald: 'bg-emerald-50 text-emerald-600',
-      blue: 'bg-blue-50 text-blue-600',
       red: 'bg-red-50 text-red-600',
       amber: 'bg-amber-50 text-amber-600',
       slate: 'bg-slate-50 text-slate-600'
     };
+    const isThemed = color === 'blue';
     return `
     <div class="bg-white rounded-xl border border-slate-200 p-5">
       <div class="flex items-center justify-between mb-3">
         <span class="text-sm font-medium text-slate-500">${title}</span>
-        <div class="w-8 h-8 rounded-lg ${colors[color]} flex items-center justify-center">
+        <div class="w-8 h-8 rounded-lg ${isThemed ? '' : colors[color] || ''} flex items-center justify-center"
+             ${isThemed ? `style="background-color: var(--primary-lighter); color: var(--primary-text-light);"` : ''}>
           <i data-lucide="${icon}" class="w-4 h-4"></i>
         </div>
       </div>
@@ -252,7 +255,7 @@ const Views = {
       const days = App.daysUntil(m.date);
       return `
       <div class="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
-        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: var(--primary-light); color: var(--primary-text-light);">
           <i data-lucide="calendar" class="w-5 h-5"></i>
         </div>
         <div class="flex-1 min-w-0">
@@ -361,9 +364,11 @@ const Views = {
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     });
     ctx.closePath();
-    ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
+    const chartFill = getComputedStyle(document.documentElement).getPropertyValue('--chart-fill').trim() || 'rgba(37, 99, 235, 0.15)';
+    const chartStroke = getComputedStyle(document.documentElement).getPropertyValue('--chart-stroke').trim() || '#2563eb';
+    ctx.fillStyle = chartFill;
     ctx.fill();
-    ctx.strokeStyle = '#2563eb';
+    ctx.strokeStyle = chartStroke;
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -377,7 +382,7 @@ const Views = {
 
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#2563eb';
+      ctx.fillStyle = chartStroke;
       ctx.fill();
 
       // Label
@@ -410,8 +415,8 @@ const Views = {
 
       ${projects.length === 0 ? `
       <div class="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-          <i data-lucide="folder-plus" class="w-8 h-8 text-blue-500"></i>
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: var(--primary-lighter);">
+          <i data-lucide="folder-plus" class="w-8 h-8" style="color: var(--primary-text-light);"></i>
         </div>
         <h3 class="font-semibold text-slate-800 mb-2">Nessun progetto</h3>
         <p class="text-slate-500 mb-4">Crea il tuo primo progetto di certificazione per iniziare</p>
@@ -426,13 +431,14 @@ const Views = {
           const cert = CERTIFICATIONS.find(c => c.id === p.certificationId);
           const isActive = Store.getActiveProjectId() === p.id;
           return `
-          <div class="bg-white rounded-xl border ${isActive ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200'} p-5 hover:shadow-md transition-all project-card" data-project-id="${p.id}">
+          <div class="bg-white rounded-xl border ${isActive ? '' : 'border-slate-200'} p-5 hover:shadow-md transition-all project-card" data-project-id="${p.id}"
+               ${isActive ? `style="border-color: var(--primary-light); box-shadow: 0 0 0 2px var(--focus-ring);"` : ''}>
             <div class="flex items-start justify-between mb-3">
               <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color:${cert?.color || '#2563eb'}15">
                 <i data-lucide="shield-check" class="w-5 h-5" style="color:${cert?.color || '#2563eb'}"></i>
               </div>
               <div class="flex items-center gap-1">
-                ${isActive ? '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">Attivo</span>' : ''}
+                ${isActive ? `<span class="text-xs px-2 py-0.5 rounded font-medium" style="background-color: var(--badge-bg); color: var(--badge-text);">Attivo</span>` : ''}
                 <button class="project-menu p-1 rounded hover:bg-slate-100 text-slate-400" data-id="${p.id}">
                   <i data-lucide="more-vertical" class="w-4 h-4"></i>
                 </button>
@@ -446,7 +452,7 @@ const Views = {
             </div>
             <div class="flex items-center gap-2">
               <div class="flex-1 bg-slate-100 rounded-full h-2">
-                <div class="h-2 rounded-full bg-blue-500 transition-all" style="width:${stats?.progressPercent || 0}%"></div>
+                <div class="h-2 rounded-full transition-all" style="background-color: var(--progress-bar); width:${stats?.progressPercent || 0}%"></div>
               </div>
               <span class="text-xs font-medium text-slate-600">${stats?.progressPercent || 0}%</span>
             </div>
@@ -713,7 +719,7 @@ const Views = {
       <div class="flex items-center justify-between">
         <div>
           <div class="flex items-center gap-2 text-sm text-slate-500 mb-1">
-            <a href="#" onclick="App.navigate('dashboard'); return false;" class="hover:text-blue-600">Dashboard</a>
+            <a href="#" onclick="App.navigate('dashboard'); return false;" onmouseenter="this.style.color='var(--primary-text-light)'" onmouseleave="this.style.color=''">Dashboard</a>
             <span>/</span>
             <span>Clausola ${clause.number}</span>
           </div>
@@ -800,9 +806,9 @@ const Views = {
     <div class="p-6 max-w-4xl space-y-5">
       <!-- Breadcrumb -->
       <div class="flex items-center gap-2 text-sm text-slate-500">
-        <a href="#" onclick="App.navigate('dashboard'); return false;" class="hover:text-blue-600">Dashboard</a>
+        <a href="#" onclick="App.navigate('dashboard'); return false;" onmouseenter="this.style.color='var(--primary-text-light)'" onmouseleave="this.style.color=''">Dashboard</a>
         <span>/</span>
-        <a href="#" onclick="App.navigate('clause', {currentClause:'${clauseNum}'}); return false;" class="hover:text-blue-600">Clausola ${clauseNum}</a>
+        <a href="#" onclick="App.navigate('clause', {currentClause:'${clauseNum}'}); return false;" onmouseenter="this.style.color='var(--primary-text-light)'" onmouseleave="this.style.color=''">Clausola ${clauseNum}</a>
         <span>/</span>
         <span class="text-slate-700">${reqId}</span>
       </div>
@@ -810,14 +816,14 @@ const Views = {
       <!-- Title -->
       <div>
         <h1 class="text-xl font-bold text-slate-800">
-          <span class="text-blue-600">${reqId}</span> ${req.title}
+          <span style="color: var(--primary-text-light);">${reqId}</span> ${req.title}
         </h1>
       </div>
 
       <!-- Requirement Text -->
-      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <h3 class="text-sm font-semibold text-blue-800 mb-2">Testo del Requisito</h3>
-        <p class="text-sm text-blue-900 leading-relaxed">${req.text || 'Testo del requisito non disponibile.'}</p>
+      <div class="rounded-xl p-4" style="background-color: var(--primary-lighter); border: 1px solid var(--primary-light);">
+        <h3 class="text-sm font-semibold mb-2" style="color: var(--primary-text);">Testo del Requisito</h3>
+        <p class="text-sm leading-relaxed" style="color: var(--primary-text);">${req.text || 'Testo del requisito non disponibile.'}</p>
       </div>
 
       <!-- Evaluation Form -->
@@ -860,7 +866,7 @@ const Views = {
             <div class="space-y-2">
               ${req.evidences.map((e, i) => `
                 <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <input type="checkbox" name="evidence_${i}" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  <input type="checkbox" name="evidence_${i}" class="w-4 h-4 rounded border-slate-300 themed-checkbox"
                          ${ev.evidenceNotes?.includes(e) ? 'checked' : ''}>
                   <span class="text-sm text-slate-700">${e}</span>
                 </label>
@@ -875,7 +881,7 @@ const Views = {
           <div id="actions-list" class="space-y-2 mb-3">
             ${(ev.actions || []).map((a, i) => `
               <div class="flex items-center gap-2 action-item">
-                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600" ${a.done ? 'checked' : ''} data-action-idx="${i}">
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 themed-checkbox" ${a.done ? 'checked' : ''} data-action-idx="${i}">
                 <input type="text" class="form-input flex-1 text-sm" value="${a.text}" data-action-text="${i}">
                 <button type="button" class="text-slate-400 hover:text-red-500 remove-action" data-idx="${i}">
                   <i data-lucide="x" class="w-4 h-4"></i>
@@ -883,7 +889,8 @@ const Views = {
               </div>
             `).join('')}
           </div>
-          <button type="button" id="add-action" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+          <button type="button" id="add-action" class="text-sm font-medium flex items-center gap-1" style="color: var(--primary-text-light);"
+                  onmouseenter="this.style.color='var(--primary-text)'" onmouseleave="this.style.color='var(--primary-text-light)'"">
             <i data-lucide="plus" class="w-4 h-4"></i> Aggiungi azione
           </button>
         </div>
@@ -995,7 +1002,7 @@ const Views = {
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2 action-item';
       div.innerHTML = `
-        <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600" data-action-idx="${idx}">
+        <input type="checkbox" class="w-4 h-4 rounded border-slate-300 themed-checkbox" data-action-idx="${idx}">
         <input type="text" class="form-input flex-1 text-sm" placeholder="Descrivi l'azione..." data-action-text="${idx}">
         <button type="button" class="text-slate-400 hover:text-red-500 remove-action" data-idx="${idx}">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -1124,7 +1131,8 @@ const Views = {
                 </td>
                 <td class="px-4 py-3 text-slate-600 text-xs">${(d.linkedRequirements || []).join(', ') || '-'}</td>
                 <td class="px-4 py-3 text-right">
-                  <button class="edit-doc text-slate-400 hover:text-blue-600 mr-2" data-doc-id="${d.id}">
+                  <button class="edit-doc text-slate-400 mr-2" data-doc-id="${d.id}"
+                          onmouseenter="this.style.color='var(--primary)'" onmouseleave="this.style.color=''">
                     <i data-lucide="edit-2" class="w-4 h-4"></i>
                   </button>
                   <button class="delete-doc text-slate-400 hover:text-red-600" data-doc-id="${d.id}">
@@ -1295,7 +1303,7 @@ const Views = {
         <!-- Progress bar -->
         <div class="relative mb-8">
           <div class="h-2 bg-slate-100 rounded-full">
-            <div class="h-2 bg-blue-500 rounded-full transition-all" style="width:${nowOffset}%"></div>
+            <div class="h-2 rounded-full transition-all" style="background-color: var(--progress-bar); width:${nowOffset}%"></div>
           </div>
           <div class="absolute top-0 h-2 w-0.5 bg-red-500" style="left:${nowOffset}%">
             <div class="absolute -top-5 left-1/2 -translate-x-1/2 text-xs text-red-600 font-medium whitespace-nowrap">Oggi</div>
@@ -1410,7 +1418,7 @@ const Views = {
 
       <!-- Export Buttons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <button id="export-gap-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
+        <button id="export-gap-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
           <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-3">
             <i data-lucide="file-text" class="w-5 h-5"></i>
           </div>
@@ -1418,15 +1426,15 @@ const Views = {
           <p class="text-sm text-slate-500 mt-1">Esporta il report completo della gap analysis in PDF</p>
         </button>
 
-        <button id="export-plan-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
-          <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+        <button id="export-plan-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style="background-color: var(--primary-lighter); color: var(--primary-text-light);">
             <i data-lucide="list-checks" class="w-5 h-5"></i>
           </div>
           <h3 class="font-semibold text-slate-800">Piano Implementazione</h3>
           <p class="text-sm text-slate-500 mt-1">Genera piano di implementazione con azioni e scadenze</p>
         </button>
 
-        <button id="export-executive-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
+        <button id="export-executive-pdf" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
           <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-3">
             <i data-lucide="presentation" class="w-5 h-5"></i>
           </div>
@@ -1434,7 +1442,7 @@ const Views = {
           <p class="text-sm text-slate-500 mt-1">Riepilogo per la direzione aziendale</p>
         </button>
 
-        <button id="export-docs-checklist" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
+        <button id="export-docs-checklist" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
           <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
             <i data-lucide="check-square" class="w-5 h-5"></i>
           </div>
@@ -1442,7 +1450,7 @@ const Views = {
           <p class="text-sm text-slate-500 mt-1">Lista documenti obbligatori e il loro stato</p>
         </button>
 
-        <button id="export-nc-register" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
+        <button id="export-nc-register" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
           <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-3">
             <i data-lucide="alert-circle" class="w-5 h-5"></i>
           </div>
@@ -1450,7 +1458,7 @@ const Views = {
           <p class="text-sm text-slate-500 mt-1">Registro non conformita con azioni correttive</p>
         </button>
 
-        <button id="export-json" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md hover:border-blue-300 transition-all">
+        <button id="export-json" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
           <div class="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center mb-3">
             <i data-lucide="database" class="w-5 h-5"></i>
           </div>
@@ -1499,5 +1507,71 @@ const Views = {
     document.getElementById('export-docs-checklist')?.addEventListener('click', () => PDFExport.docsChecklist(project));
     document.getElementById('export-nc-register')?.addEventListener('click', () => PDFExport.ncRegister(project));
     document.getElementById('export-json')?.addEventListener('click', () => App.exportData());
+  },
+
+  // ============================================================
+  // SETTINGS
+  // ============================================================
+  settings() {
+    const themes = ThemeManager.getAll();
+    const currentTheme = ThemeManager.current();
+
+    return `
+    <div class="p-6 space-y-6 max-w-3xl">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">Impostazioni</h1>
+        <p class="text-slate-500">Personalizza l'aspetto dell'applicazione</p>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold text-slate-800 mb-4">Tema Colore</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${themes.map(t => {
+            const def = ThemeDefinitions[t.id];
+            const isActive = t.id === currentTheme;
+            return this._themePreview(t.id, t.name, def, isActive);
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  },
+
+  _themePreview(themeId, name, def, isActive) {
+    const colors = def.colors;
+    return `
+    <button class="theme-card rounded-xl border-2 p-4 text-left transition-all hover:shadow-md ${isActive ? '' : 'border-slate-200'}"
+            data-theme-id="${themeId}"
+            style="${isActive ? `border-color: ${colors['--primary']}; box-shadow: 0 0 0 2px ${colors['--focus-ring']};` : ''}">
+      <!-- Preview bars -->
+      <div class="flex gap-2 mb-3 h-16 rounded-lg overflow-hidden border border-slate-100">
+        <!-- Sidebar preview -->
+        <div class="w-12 flex-shrink-0" style="background-color: ${colors['--sidebar-bg'] || '#fff'};"></div>
+        <!-- Main area preview -->
+        <div class="flex-1 flex flex-col p-2 gap-1.5" style="background-color: ${colors['--body-bg'] || '#f8fafc'};">
+          <div class="h-2 rounded-full w-3/4" style="background-color: ${colors['--primary']};"></div>
+          <div class="h-1.5 rounded-full w-1/2 bg-slate-200"></div>
+          <div class="flex-1 flex gap-1 mt-auto">
+            <div class="flex-1 rounded h-3" style="background-color: ${colors['--primary-light']};"></div>
+            <div class="flex-1 rounded h-3 bg-slate-100"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Name -->
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-medium text-slate-800">${name}</span>
+        ${isActive ? `<span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background-color: ${colors['--badge-bg']}; color: ${colors['--badge-text']};">Attivo</span>` : ''}
+      </div>
+    </button>`;
+  },
+
+  bindSettings() {
+    document.querySelectorAll('.theme-card').forEach(el => {
+      el.addEventListener('click', () => {
+        const themeId = el.dataset.themeId;
+        ThemeManager.apply(themeId);
+        ThemeManager.saveToServer(themeId);
+        App.render();
+      });
+    });
   }
 };
