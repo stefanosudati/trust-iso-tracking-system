@@ -66,19 +66,27 @@ const ApiClient = {
   // ─── Auth API ─────────────────────────────────────────────
 
   async register(email, password, name) {
-    const data = await this._fetch('/auth/register', {
+    // Usa fetch diretto (non _fetch) per evitare auto-logout su 401/403
+    const res = await fetch('/api/auth/register', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name })
     });
-    this.setAuth(data.token, data.user);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Errore del server');
+    if (data.token) this.setAuth(data.token, data.user);
     return data;
   },
 
   async login(email, password) {
-    const data = await this._fetch('/auth/login', {
+    // Usa fetch diretto (non _fetch) per evitare auto-logout su 401/403
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Errore del server');
     this.setAuth(data.token, data.user);
     return data;
   },

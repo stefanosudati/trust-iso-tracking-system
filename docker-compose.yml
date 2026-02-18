@@ -9,6 +9,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - DB_PATH=/data/db.sqlite
       - PORT=3002
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@trust-iso.local}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - ADMIN_NAME=${ADMIN_NAME:-Amministratore}
     volumes:
       - db_data:/data
     restart: unless-stopped

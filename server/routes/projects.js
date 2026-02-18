@@ -79,6 +79,20 @@ function defaultMilestones(startDate, targetDate) {
   ];
 }
 
+/** Check if user is admin */
+function isAdmin(userId) {
+  const user = db.prepare('SELECT role FROM users WHERE id = ?').get(userId);
+  return user && user.role === 'admin';
+}
+
+/** Get project row — admin can access any project, regular users only their own */
+function getProjectRow(projectId, userId, columns = '*') {
+  if (isAdmin(userId)) {
+    return db.prepare(`SELECT ${columns} FROM projects WHERE id = ?`).get(projectId);
+  }
+  return db.prepare(`SELECT ${columns} FROM projects WHERE id = ? AND user_id = ?`).get(projectId, userId);
+}
+
 // ─── All routes require authentication ─────────────────────
 
 router.use(requireAuth);
@@ -86,9 +100,12 @@ router.use(requireAuth);
 // ─── GET /api/projects ─────────────────────────────────────
 
 router.get('/', (req, res) => {
-  const rows = db.prepare(
-    'SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at DESC'
-  ).all(req.userId);
+  let rows;
+  if (isAdmin(req.userId)) {
+    rows = db.prepare('SELECT * FROM projects ORDER BY updated_at DESC').all();
+  } else {
+    rows = db.prepare('SELECT * FROM projects WHERE user_id = ? ORDER BY updated_at DESC').all(req.userId);
+  }
   res.json(rows.map(serializeProject));
 });
 
@@ -135,10 +152,7 @@ router.post('/', (req, res) => {
 // ─── GET /api/projects/:id ─────────────────────────────────
 
 router.get('/:id', (req, res) => {
-  const row = db.prepare(
-    'SELECT * FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId);
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
   res.json(serializeProject(row));
 });
@@ -146,10 +160,7 @@ router.get('/:id', (req, res) => {
 // ─── PUT /api/projects/:id ─────────────────────────────────
 
 router.put('/:id', (req, res) => {
-  const row = db.prepare(
-    'SELECT * FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId);
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const data = req.body;
@@ -176,11 +187,11 @@ router.put('/:id', (req, res) => {
       cert_body = @cert_body, phase = @phase, notes = @notes,
       evaluations_json = @evaluations_json, documents_json = @documents_json,
       milestones_json = @milestones_json, updated_at = datetime('now')
-    WHERE id = @id AND user_id = @userId
+    WHERE id = @id
   `).run({
     ...cols, evaluations_json: evaluationsJson,
     documents_json: documentsJson, milestones_json: milestonesJson,
-    id: req.params.id, userId: req.userId
+    id: req.params.id
   });
 
   const updated = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id);
@@ -190,21 +201,18 @@ router.put('/:id', (req, res) => {
 // ─── DELETE /api/projects/:id ──────────────────────────────
 
 router.delete('/:id', (req, res) => {
-  const result = db.prepare(
-    'DELETE FROM projects WHERE id = ? AND user_id = ?'
-  ).run(req.params.id, req.userId);
+  // Verify project exists and user has access
+  const row = getProjectRow(req.params.id, req.userId, 'id');
+  if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
-  if (result.changes === 0) return res.status(404).json({ error: 'Progetto non trovato' });
+  db.prepare('DELETE FROM projects WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
 
 // ─── PUT /api/projects/:id/evaluations/:reqId ──────────────
 
 router.put('/:id/evaluations/:reqId', (req, res) => {
-  const row = db.prepare(
-    'SELECT evaluations_json FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId, 'id, evaluations_json');
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const evaluations = JSON.parse(row.evaluations_json || '{}');
@@ -282,10 +290,7 @@ router.put('/:id/evaluations/:reqId', (req, res) => {
 // ─── POST /api/projects/:id/documents ──────────────────────
 
 router.post('/:id/documents', (req, res) => {
-  const row = db.prepare(
-    'SELECT documents_json FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId, 'id, documents_json');
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const documents = JSON.parse(row.documents_json || '[]');
@@ -306,10 +311,7 @@ router.post('/:id/documents', (req, res) => {
 // ─── PUT /api/projects/:id/documents/:docId ────────────────
 
 router.put('/:id/documents/:docId', (req, res) => {
-  const row = db.prepare(
-    'SELECT documents_json FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId, 'id, documents_json');
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const documents = JSON.parse(row.documents_json || '[]');
@@ -328,10 +330,7 @@ router.put('/:id/documents/:docId', (req, res) => {
 // ─── DELETE /api/projects/:id/documents/:docId ─────────────
 
 router.delete('/:id/documents/:docId', (req, res) => {
-  const row = db.prepare(
-    'SELECT documents_json FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId, 'id, documents_json');
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   let documents = JSON.parse(row.documents_json || '[]');
@@ -347,10 +346,7 @@ router.delete('/:id/documents/:docId', (req, res) => {
 // ─── PUT /api/projects/:id/milestones ──────────────────────
 
 router.put('/:id/milestones', (req, res) => {
-  const row = db.prepare(
-    'SELECT id FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
-
+  const row = getProjectRow(req.params.id, req.userId, 'id');
   if (!row) return res.status(404).json({ error: 'Progetto non trovato' });
 
   db.prepare(
@@ -363,9 +359,7 @@ router.put('/:id/milestones', (req, res) => {
 // ─── GET /api/projects/:id/changelog ──────────────────────
 
 router.get('/:id/changelog', (req, res) => {
-  const project = db.prepare(
-    'SELECT id FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
+  const project = getProjectRow(req.params.id, req.userId, 'id');
   if (!project) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const limit = Math.min(parseInt(req.query.limit) || 100, 500);
@@ -388,9 +382,7 @@ router.get('/:id/changelog', (req, res) => {
 // ─── GET /api/projects/:id/changelog/:reqId ───────────────
 
 router.get('/:id/changelog/:reqId', (req, res) => {
-  const project = db.prepare(
-    'SELECT id FROM projects WHERE id = ? AND user_id = ?'
-  ).get(req.params.id, req.userId);
+  const project = getProjectRow(req.params.id, req.userId, 'id');
   if (!project) return res.status(404).json({ error: 'Progetto non trovato' });
 
   const rows = db.prepare(`
