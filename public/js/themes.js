@@ -77,7 +77,7 @@ const ThemeDefinitions = {
       '--chart-fill': 'rgba(42, 92, 115, 0.15)',
       '--chart-stroke': '#2A5C73',
 
-      '--app-title': '#2A5C73',
+      '--app-title': '#293173',
     }
   },
 
