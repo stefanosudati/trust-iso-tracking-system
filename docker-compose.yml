@@ -6,7 +6,7 @@ services:
     ports:
       - "${PORT:-3002}:3002"
     environment:
-      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
+      - JWT_SECRET=${JWT_SECRET}
       - DB_PATH=/data/db.sqlite
       - PORT=3002
     volumes:
