@@ -31,9 +31,9 @@ const Views = {
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        ${this._statCard('Conformita', stats?.compliancePercent + '%', 'Requisiti implementati', 'check-circle', 'emerald')}
+        ${this._statCard('Conformità', stats?.compliancePercent + '%', 'Requisiti implementati', 'check-circle', 'emerald')}
         ${this._statCard('Progresso', stats?.progressPercent + '%', 'Avanzamento complessivo', 'trending-up', 'blue')}
-        ${this._statCard('Criticita', stats?.notImplemented || 0, 'Requisiti non conformi', 'alert-triangle', 'red')}
+        ${this._statCard('Criticità', stats?.notImplemented || 0, 'Requisiti non conformi', 'alert-triangle', 'red')}
         ${this._statCard('Scadenza', daysLeft !== null ? (daysLeft > 0 ? daysLeft + ' giorni' : 'Scaduto') : '-', project.targetDate ? 'Target: ' + App.formatDate(project.targetDate) : 'Non impostata', 'clock', daysLeft !== null && daysLeft < 30 ? 'amber' : 'slate')}
       </div>
 
@@ -226,7 +226,7 @@ const Views = {
     }).slice(0, 5);
 
     if (!critical.length) {
-      return '<p class="text-sm text-slate-500 py-4 text-center">Nessuna criticita ad alta priorita rilevata</p>';
+      return '<p class="text-sm text-slate-500 py-4 text-center">Nessuna criticità ad alta priorità rilevata</p>';
     }
 
     return critical.map(r => `
@@ -830,7 +830,7 @@ const Views = {
       <form id="evaluation-form" class="space-y-5">
         <!-- Status Selection -->
         <div class="bg-white rounded-xl border border-slate-200 p-5">
-          <h3 class="font-semibold text-slate-800 mb-3">Stato di Conformita</h3>
+          <h3 class="font-semibold text-slate-800 mb-3">Stato di Conformità</h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             ${this._statusRadio('implemented', 'Implementato', 'bg-emerald-100 text-emerald-700 border-emerald-300', ev.status)}
             ${this._statusRadio('partial', 'Parziale', 'bg-amber-100 text-amber-700 border-amber-300', ev.status)}
@@ -841,14 +841,14 @@ const Views = {
           <!-- N/A justification -->
           <div id="na-justification" class="${ev.status === 'not_applicable' ? '' : 'hidden'} mt-3">
             <label class="form-label">Motivazione Non Applicabilita</label>
-            <textarea name="naJustification" rows="2" class="form-input" placeholder="Specificare perche il requisito non e applicabile...">${ev.naJustification || ''}</textarea>
+            <textarea name="naJustification" rows="2" class="form-input" placeholder="Specificare perché il requisito non è applicabile...">${ev.naJustification || ''}</textarea>
           </div>
         </div>
 
         <!-- Notes & Observations -->
         <div class="bg-white rounded-xl border border-slate-200 p-5">
           <h3 class="font-semibold text-slate-800 mb-3">Note e Osservazioni</h3>
-          <textarea name="notes" rows="3" class="form-input" placeholder="Note interpretative, osservazioni sulla conformita...">${ev.notes || ''}</textarea>
+          <textarea name="notes" rows="3" class="form-input" placeholder="Note interpretative, osservazioni sulla conformità...">${ev.notes || ''}</textarea>
         </div>
 
         <!-- Evidence & Mandatory Docs -->
@@ -1152,13 +1152,13 @@ const Views = {
   _mandatoryDocsChecklist(project) {
     const mandatory = [
       { name: 'Campo di applicazione del SGQ', req: '4.3' },
-      { name: 'Politica per la qualita', req: '5.2' },
-      { name: 'Obiettivi per la qualita', req: '6.2' },
+      { name: 'Politica per la qualità', req: '5.2' },
+      { name: 'Obiettivi per la qualità', req: '6.2' },
       { name: 'Evidenze di competenza', req: '7.2' },
       { name: 'Procedura gestione informazioni documentate', req: '7.5' },
       { name: 'Procedura audit interni', req: '9.2' },
       { name: 'Registrazioni riesame di direzione', req: '9.3' },
-      { name: 'Registrazioni non conformita e azioni correttive', req: '10.2' }
+      { name: 'Registrazioni non conformità e azioni correttive', req: '10.2' }
     ];
 
     const docNames = (project.documents || []).map(d => d.name.toLowerCase());
@@ -1455,7 +1455,7 @@ const Views = {
             <i data-lucide="alert-circle" class="w-5 h-5"></i>
           </div>
           <h3 class="font-semibold text-slate-800">Registro NC</h3>
-          <p class="text-sm text-slate-500 mt-1">Registro non conformita con azioni correttive</p>
+          <p class="text-sm text-slate-500 mt-1">Registro non conformità con azioni correttive</p>
         </button>
 
         <button id="export-json" class="bg-white rounded-xl border border-slate-200 p-5 text-left hover:shadow-md transition-all" onmouseenter="this.style.borderColor='var(--primary-light)'" onmouseleave="this.style.borderColor=''">
@@ -1533,6 +1533,30 @@ const Views = {
           }).join('')}
         </div>
       </div>
+
+      <!-- Cambio Password -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold text-slate-800 mb-4">Cambia Password</h3>
+        <form id="change-password-form" class="space-y-4 max-w-sm">
+          <div>
+            <label class="form-label">Password attuale</label>
+            <input type="password" name="oldPassword" required class="form-input" placeholder="La tua password attuale">
+          </div>
+          <div>
+            <label class="form-label">Nuova password (min. 6 caratteri)</label>
+            <input type="password" name="newPassword" required minlength="6" class="form-input" placeholder="Scegli una nuova password">
+          </div>
+          <div>
+            <label class="form-label">Conferma nuova password</label>
+            <input type="password" name="confirmPassword" required class="form-input" placeholder="Ripeti la nuova password">
+          </div>
+          <div id="password-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+          <div id="password-success" class="hidden text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg"></div>
+          <button type="submit" class="btn-primary">
+            <i data-lucide="lock" class="w-4 h-4"></i> Aggiorna Password
+          </button>
+        </form>
+      </div>
     </div>`;
   },
 
@@ -1571,6 +1595,137 @@ const Views = {
         ThemeManager.apply(themeId);
         ThemeManager.saveToServer(themeId);
         App.render();
+      });
+    });
+
+    // Password change form
+    document.getElementById('change-password-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const errorEl = document.getElementById('password-error');
+      const successEl = document.getElementById('password-success');
+      const btn = e.target.querySelector('button[type="submit"]');
+
+      errorEl.classList.add('hidden');
+      successEl.classList.add('hidden');
+
+      const oldPw = fd.get('oldPassword');
+      const newPw = fd.get('newPassword');
+      const confirmPw = fd.get('confirmPassword');
+
+      if (newPw !== confirmPw) {
+        errorEl.textContent = 'Le password non corrispondono';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Aggiornamento...';
+
+      try {
+        await ApiClient.changePassword(oldPw, newPw);
+        successEl.textContent = 'Password aggiornata con successo';
+        successEl.classList.remove('hidden');
+        e.target.reset();
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.remove('hidden');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Aggiorna Password';
+      if (window.lucide) lucide.createIcons();
+    });
+  },
+
+  // ============================================================
+  // ADMIN - GESTIONE UTENTI
+  // ============================================================
+  adminUsers(users) {
+    return `
+    <div class="p-6 space-y-6 max-w-4xl">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">Gestione Utenti</h1>
+        <p class="text-slate-500">Approva o rimuovi gli utenti del sistema</p>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50">
+              <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Nome</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Email</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Ruolo</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Stato</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Registrazione</th>
+              <th class="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map(u => `
+              <tr class="border-b border-slate-100 last:border-0">
+                <td class="px-4 py-3 text-sm font-medium text-slate-800">${u.name}</td>
+                <td class="px-4 py-3 text-sm text-slate-600">${u.email}</td>
+                <td class="px-4 py-3">
+                  <span class="text-xs font-medium px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">${u.role === 'admin' ? 'Admin' : 'Utente'}</span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-xs font-medium px-2 py-0.5 rounded-full ${u.isApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${u.isApproved ? 'Approvato' : 'In attesa'}</span>
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-500">${u.createdAt ? App.formatDate(u.createdAt) : '-'}</td>
+                <td class="px-4 py-3 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    ${!u.isApproved && u.role !== 'admin' ? `
+                      <button data-approve="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors">
+                        <i data-lucide="check" class="w-3.5 h-3.5 inline-block mr-1"></i>Approva
+                      </button>` : ''}
+                    ${u.role !== 'admin' ? `
+                      <button data-delete="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5 inline-block mr-1"></i>Elimina
+                      </button>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ${users.length === 0 ? '<div class="p-8 text-center text-slate-400">Nessun utente registrato</div>' : ''}
+      </div>
+    </div>`;
+  },
+
+  bindAdminUsers() {
+    document.querySelectorAll('[data-approve]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const userId = btn.dataset.approve;
+        try {
+          await ApiClient.approveUser(userId);
+          App.showToast('Utente approvato', 'success');
+          // Refresh the view
+          const users = await ApiClient.getUsers();
+          document.getElementById('main-content').innerHTML = Views.adminUsers(users);
+          Views.bindAdminUsers();
+          if (window.lucide) lucide.createIcons();
+        } catch (err) {
+          App.showToast('Errore: ' + err.message, 'error');
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const userId = btn.dataset.delete;
+        if (!confirm('Sei sicuro di voler eliminare questo utente?')) return;
+        try {
+          await ApiClient.deleteUser(userId);
+          App.showToast('Utente eliminato', 'success');
+          const users = await ApiClient.getUsers();
+          document.getElementById('main-content').innerHTML = Views.adminUsers(users);
+          Views.bindAdminUsers();
+          if (window.lucide) lucide.createIcons();
+        } catch (err) {
+          App.showToast('Errore: ' + err.message, 'error');
+        }
       });
     });
   }

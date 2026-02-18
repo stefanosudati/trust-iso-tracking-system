@@ -326,6 +326,34 @@ const ApiClient = {
     await this.loadProjects();
   },
 
+  // ─── Password Change ─────────────────────────────────────
+
+  async changePassword(oldPassword, newPassword) {
+    return await this._fetch('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify({ oldPassword, newPassword })
+    });
+  },
+
+  // ─── Admin: User Management ─────────────────────────────
+
+  async getUsers() {
+    const data = await this._fetch('/admin/users');
+    return data.users;
+  },
+
+  async approveUser(userId) {
+    return await this._fetch('/admin/users/' + userId + '/approve', {
+      method: 'PUT'
+    });
+  },
+
+  async deleteUser(userId) {
+    return await this._fetch('/admin/users/' + userId, {
+      method: 'DELETE'
+    });
+  },
+
   // ─── Stub for backward compatibility ──────────────────────
   init() {
     // No-op: replaced by async App.init() flow

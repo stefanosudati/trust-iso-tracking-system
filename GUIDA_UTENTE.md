@@ -21,7 +21,7 @@
 1. Apri l'applicazione nel browser
 2. Clicca sulla tab **Registrati**
 3. Inserisci:
-   - **Nome completo** — il tuo nome (apparira nell'intestazione)
+   - **Nome completo** — il tuo nome (apparirà nell'intestazione)
    - **Email** — deve essere unica nel sistema
    - **Password** — minimo 6 caratteri
 4. Clicca **Crea Account**
@@ -45,7 +45,7 @@ La dashboard mostra una panoramica di tutti i tuoi progetti.
 
 - **Card Certificazione** — Mostra la certificazione disponibile (ISO 9001:2015). Clicca per creare un nuovo progetto.
 - **Lista Progetti Recenti** — Tabella con tutti i progetti ordinati per data di aggiornamento
-- **Statistiche Rapide** — Per ogni progetto: numero requisiti valutati, percentuale conformita, numero documenti
+- **Statistiche Rapide** — Per ogni progetto: numero requisiti valutati, percentuale conformità, numero documenti
 
 ### Azioni rapide
 
@@ -138,7 +138,7 @@ La Gap Analysis e il cuore del sistema. Permette di valutare ogni requisito ISO 
 
 1. Clicca **Nuovo Documento**
 2. Compila:
-   - **Nome** — Nome del documento (es. "Manuale della Qualita")
+   - **Nome** — Nome del documento (es. "Manuale della Qualità")
    - **Codice** — Codice identificativo (es. "MQ-001")
    - **Versione** — Numero versione (es. "1.0")
    - **Data emissione** — Data del documento
@@ -176,7 +176,7 @@ La Gap Analysis e il cuore del sistema. Permette di valutare ogni requisito ISO 
 Quando crei un progetto, vengono generate automaticamente 11 milestones standard:
 1. Kick-off progetto
 2. Completamento gap analysis
-3. Definizione politica della qualita
+3. Definizione politica della qualità
 4. Documentazione processi core
 5. Formazione personale
 6. Implementazione sistema
@@ -205,7 +205,7 @@ Quando crei un progetto, vengono generate automaticamente 11 milestones standard
 
 1. Con un progetto attivo, clicca **Report** nel menu laterale
 2. Vedrai:
-   - Riepilogo generale con percentuali di conformita
+   - Riepilogo generale con percentuali di conformità
    - Grafico a radar per clausola
    - Dettaglio per clausola con punteggi medi
    - Lista requisiti critici (punteggio 0-1)
@@ -252,7 +252,7 @@ Quando crei un progetto, vengono generate automaticamente 11 milestones standard
 - Le password sono crittografate con bcrypt (non vengono mai salvate in chiaro)
 - L'autenticazione usa token JWT con scadenza a 7 giorni
 - Ogni utente vede solo i propri progetti
-- La sessione scade automaticamente dopo 7 giorni di inattivita
+- La sessione scade automaticamente dopo 7 giorni di inattività
 
 ---
 

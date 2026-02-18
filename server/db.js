@@ -56,10 +56,26 @@ db.exec(`
 `);
 
 // Migrations
-try {
-  db.exec(`ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'default'`);
-} catch (e) {
-  // Column already exists — ignore
+const migrations = [
+  `ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'default'`,
+  `ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'`,
+  `ALTER TABLE users ADD COLUMN is_approved INTEGER DEFAULT 0`,
+  `ALTER TABLE users ADD COLUMN password_change_required INTEGER DEFAULT 0`,
+];
+
+for (const sql of migrations) {
+  try { db.exec(sql); } catch (e) { /* Column already exists */ }
+}
+
+// Seed default admin user if none exists
+const adminExists = db.prepare("SELECT id FROM users WHERE role = 'admin'").get();
+if (!adminExists) {
+  const bcrypt = require('bcryptjs');
+  const hash = bcrypt.hashSync('admin', 12);
+  db.prepare(
+    "INSERT INTO users (email, name, password_hash, role, is_approved, password_change_required) VALUES (?, ?, ?, 'admin', 1, 1)"
+  ).run('admin@trust-iso.local', 'Amministratore', hash);
+  console.log('Utente admin creato: admin@trust-iso.local / admin');
 }
 
 console.log(`Database SQLite inizializzato: ${DB_PATH}`);

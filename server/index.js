@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/health', require('./routes/health'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
+app.use('/api/admin', require('./routes/admin'));
 
 // SPA fallback: serve index.html for all non-API routes
 app.get('*', (req, res) => {

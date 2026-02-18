@@ -133,8 +133,11 @@ const App = {
       }
     }
 
-    // Settings (always visible)
+    // Admin + Settings (always visible)
     html += '<div class="my-3" style="border-top: 1px solid var(--sidebar-border);"></div>';
+    if (ApiClient.getUser()?.role === 'admin') {
+      html += this.sidebarItem('admin-users', 'Gestione Utenti', 'users');
+    }
     html += this.sidebarItem('settings', 'Impostazioni', 'settings');
 
     nav.innerHTML = html;
@@ -219,6 +222,19 @@ const App = {
       case 'settings':
         main.innerHTML = Views.settings();
         Views.bindSettings();
+        break;
+      case 'admin-users':
+        (async () => {
+          main.innerHTML = '<div class="p-6 text-slate-400">Caricamento utenti...</div>';
+          try {
+            const users = await ApiClient.getUsers();
+            main.innerHTML = Views.adminUsers(users);
+            Views.bindAdminUsers();
+            if (window.lucide) lucide.createIcons();
+          } catch (err) {
+            main.innerHTML = '<div class="p-6 text-red-500">Errore: ' + err.message + '</div>';
+          }
+        })();
         break;
       default:
         main.innerHTML = Views.dashboard(project);

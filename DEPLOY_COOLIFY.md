@@ -24,7 +24,7 @@ Prima di tutto, crea il record DNS per il sottodominio `trust.4piemai.it`.
    |------|------|--------|-----|
    | **A** | `trust` | `IP_DELLA_TUA_VPS` | Auto |
 
-   > Se usi **Cloudflare**, puoi anche usare il proxy (nuvola arancione), ma in quel caso Coolify potrebbe avere problemi con il certificato SSL. In caso di problemi, disabilita il proxy Cloudflare (nuvola grigia = DNS only) e lascia che Coolify gestisca SSL con Let's Encrypt.
+   > Se usi **Cloudflare**, puoi anche usare il proxy (nuvola arancione), ma in quel caso Coolify potrebbe avere problemi con il certificato SSL. In caso di problemi, disabilita il proxy Cloudflare (nuvola grigià= DNS only) e lascia che Coolify gestisca SSL con Let's Encrypt.
 
 3. Attendi la propagazione DNS (di solito pochi minuti, al massimo 24 ore)
 4. Verifica che il DNS punti alla VPS:
@@ -35,11 +35,11 @@ Prima di tutto, crea il record DNS per il sottodominio `trust.4piemai.it`.
 
 ---
 
-## Step 2: Collegare GitHub a Coolify (se non gia fatto)
+## Step 2: Collegare GitHub a Coolify (se non giàfatto)
 
 1. Apri il pannello Coolify
 2. Vai su **Sources** (o **Git Sources**) nel menu laterale
-3. Se non hai gia collegato GitHub:
+3. Se non hai giàcollegato GitHub:
    - Clicca **+ Add** → **GitHub App**
    - Segui la procedura per autorizzare Coolify ad accedere ai tuoi repository
    - Seleziona il repository `trust-iso-tracking-system` (o dai accesso a tutti i repo)
@@ -73,7 +73,7 @@ Coolify dovrebbe rilevare automaticamente il `Dockerfile` nella root del progett
 
 ## Step 5: Configurare le Variabili d'Ambiente
 
-Questa e la parte piu importante. Vai nella tab **Environment Variables** e aggiungi:
+Questa è la parte più importante. Vai nella tab **Environment Variables** e aggiungi:
 
 ### Variabili obbligatorie
 
@@ -183,7 +183,7 @@ Risposta attesa:
 ### Il build fallisce
 
 - **Errore `npm ci`**: verifica che `package-lock.json` sia nel repository
-- **Errore `better-sqlite3`**: il Dockerfile gia include le build dependencies (`python3 make g++`), non dovrebbe succedere
+- **Errore `better-sqlite3`**: il Dockerfile giàinclude le build dependencies (`python3 make g++`), non dovrebbe succedere
 
 ### Il container si avvia ma il sito non risponde
 

@@ -330,13 +330,13 @@ const PDFExport = {
 
     const mandatory = [
       { name: 'Campo di applicazione del SGQ', req: '4.3' },
-      { name: 'Politica per la qualita', req: '5.2' },
-      { name: 'Obiettivi per la qualita', req: '6.2' },
+      { name: 'Politica per la qualità', req: '5.2' },
+      { name: 'Obiettivi per la qualità', req: '6.2' },
       { name: 'Evidenze di competenza', req: '7.2' },
       { name: 'Procedura gestione informazioni documentate', req: '7.5' },
       { name: 'Procedura audit interni', req: '9.2' },
       { name: 'Registrazioni riesame di direzione', req: '9.3' },
-      { name: 'Registrazioni non conformita e azioni correttive', req: '10.2' }
+      { name: 'Registrazioni non conformità e azioni correttive', req: '10.2' }
     ];
 
     const docNames = (project.documents || []).map(d => d.name.toLowerCase());
@@ -398,10 +398,10 @@ const PDFExport = {
 
     if (ncReqs.length === 0) {
       doc.setFontSize(10);
-      doc.text('Nessuna non conformita registrata.', 15, y);
+      doc.text('Nessuna non conformità registrata.', 15, y);
     } else {
       doc.setFontSize(9);
-      doc.text(`Totale non conformita: ${ncReqs.length}`, 15, y);
+      doc.text(`Totale non conformità: ${ncReqs.length}`, 15, y);
       y += 10;
 
       ncReqs.forEach((req, idx) => {

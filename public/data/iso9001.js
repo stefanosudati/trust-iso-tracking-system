@@ -1,11 +1,11 @@
 /**
  * ISO 9001:2015 - Complete Clause Structure
- * Sistemi di gestione per la qualita - Requisiti
+ * Sistemi di gestione per la qualità - Requisiti
  */
 const ISO_9001_2015 = {
   id: "iso-9001-2015",
   name: "ISO 9001:2015",
-  fullName: "Sistemi di gestione per la qualita - Requisiti",
+  fullName: "Sistemi di gestione per la qualità - Requisiti",
   year: 2015,
   icon: "shield-check",
   color: "#2563eb",
@@ -17,7 +17,7 @@ const ISO_9001_2015 = {
         {
           id: "4.1",
           title: "Comprendere l'organizzazione e il suo contesto",
-          text: "L'organizzazione deve determinare i fattori esterni e interni rilevanti per le sue finalita e indirizzi strategici e che influenzano la sua capacita di conseguire il/i risultato/i atteso/i del proprio sistema di gestione per la qualita. L'organizzazione deve monitorare e riesaminare le informazioni che riguardano tali fattori esterni e interni.",
+          text: "L'organizzazione deve determinare i fattori esterni e interni rilevanti per le sue finalità e indirizzi strategici e che influenzano la sua capacità di conseguire il/i risultato/i atteso/i del proprio sistema di gestione per la qualità. L'organizzazione deve monitorare e riesaminare le informazioni che riguardano tali fattori esterni e interni.",
           mandatoryDocs: [],
           evidences: [
             "Analisi SWOT o analisi del contesto",
@@ -28,7 +28,7 @@ const ISO_9001_2015 = {
         {
           id: "4.2",
           title: "Comprendere le esigenze e le aspettative delle parti interessate",
-          text: "Per la sua influenza, effettiva o potenziale, sulla capacita dell'organizzazione di fornire con regolarita prodotti e servizi che soddisfino i requisiti del cliente e quelli cogenti applicabili, l'organizzazione deve determinare: a) le parti interessate rilevanti per il SGQ; b) i requisiti di tali parti interessate rilevanti per il SGQ. L'organizzazione deve monitorare e riesaminare le informazioni riguardanti tali parti interessate e i loro requisiti rilevanti.",
+          text: "Per la sua influenza, effettiva o potenziale, sulla capacità dell'organizzazione di fornire con regolarità prodotti e servizi che soddisfino i requisiti del cliente e quelli cogenti applicabili, l'organizzazione deve determinare: a) le parti interessate rilevanti per il SGQ; b) i requisiti di tali parti interessate rilevanti per il SGQ. L'organizzazione deve monitorare e riesaminare le informazioni riguardanti tali parti interessate e i loro requisiti rilevanti.",
           mandatoryDocs: [],
           evidences: [
             "Elenco parti interessate",
@@ -44,13 +44,13 @@ const ISO_9001_2015 = {
           evidences: [
             "Documento campo di applicazione",
             "Giustificazione esclusioni",
-            "Manuale qualita (se presente)"
+            "Manuale qualità (se presente)"
           ]
         },
         {
           id: "4.4",
-          title: "Sistema di gestione per la qualita e relativi processi",
-          text: "L'organizzazione deve stabilire, attuare, mantenere e migliorare in modo continuo un SGQ, compresi i processi necessari e le loro interazioni, in conformita ai requisiti della presente norma internazionale. L'organizzazione deve determinare i processi necessari per il SGQ e la loro applicazione nell'ambito dell'intera organizzazione.",
+          title: "Sistema di gestione per la qualità e relativi processi",
+          text: "L'organizzazione deve stabilire, attuare, mantenere e migliorare in modo continuo un SGQ, compresi i processi necessari e le loro interazioni, in conformità ai requisiti della presente norma internazionale. L'organizzazione deve determinare i processi necessari per il SGQ e la loro applicazione nell'ambito dell'intera organizzazione.",
           mandatoryDocs: [],
           evidences: [
             "Mappa dei processi",
@@ -62,7 +62,7 @@ const ISO_9001_2015 = {
             {
               id: "4.4.1",
               title: "Processi del SGQ",
-              text: "L'organizzazione deve determinare: input e output attesi, sequenza e interazione, criteri e metodi, risorse necessarie, responsabilita e autorita, rischi e opportunita, valutare e attuare modifiche necessarie."
+              text: "L'organizzazione deve determinare: input e output attesi, sequenza e interazione, criteri e metodi, risorse necessarie, responsabilità e autorita, rischi e opportunita, valutare e attuare modifiche necessarie."
             },
             {
               id: "4.4.2",
@@ -85,7 +85,7 @@ const ISO_9001_2015 = {
             {
               id: "5.1.1",
               title: "Generalita",
-              text: "L'alta direzione deve dimostrare leadership e impegno nei riguardi del SGQ: assumendosi la responsabilita dell'efficacia del SGQ; assicurando che siano stabiliti la politica e gli obiettivi per la qualita e che essi siano compatibili con il contesto e con gli indirizzi strategici dell'organizzazione; assicurando l'integrazione dei requisiti del SGQ nei processi di business dell'organizzazione; promuovendo l'utilizzo dell'approccio per processi e del risk-based thinking; assicurando la disponibilita delle risorse; comunicando l'importanza di una gestione per la qualita efficace; assicurando che il SGQ consegua i risultati attesi; coinvolgendo, dirigendo e sostenendo le persone affinche contribuiscano all'efficacia del SGQ; promuovendo il miglioramento; fornendo sostegno agli altri pertinenti ruoli gestionali.",
+              text: "L'alta direzione deve dimostrare leadership e impegno nei riguardi del SGQ: assumendosi la responsabilità dell'efficacia del SGQ; assicurando che siano stabiliti la politica e gli obiettivi per la qualità e che essi siano compatibili con il contesto e con gli indirizzi strategici dell'organizzazione; assicurando l'integrazione dei requisiti del SGQ nei processi di business dell'organizzazione; promuovendo l'utilizzo dell'approccio per processi e del risk-based thinking; assicurando la disponibilità delle risorse; comunicando l'importanza di una gestione per la qualità efficace; assicurando che il SGQ consegua i risultati attesi; coinvolgendo, dirigendo e sostenendo le persone affinche contribuiscano all'efficacia del SGQ; promuovendo il miglioramento; fornendo sostegno agli altri pertinenti ruoli gestionali.",
               evidences: [
                 "Verbali riesame direzione",
                 "Comunicazioni della direzione",
@@ -95,7 +95,7 @@ const ISO_9001_2015 = {
             {
               id: "5.1.2",
               title: "Focalizzazione sul cliente",
-              text: "L'alta direzione deve dimostrare leadership e impegno in merito alla focalizzazione sul cliente, assicurando che: siano determinati, compresi e soddisfatti con regolarita i requisiti del cliente e i requisiti cogenti applicabili; siano determinati e affrontati i rischi e le opportunita che possono influenzare la conformita dei prodotti e dei servizi e la capacita di accrescere la soddisfazione del cliente; sia mantenuta la focalizzazione sull'accrescimento della soddisfazione del cliente.",
+              text: "L'alta direzione deve dimostrare leadership e impegno in merito alla focalizzazione sul cliente, assicurando che: siano determinati, compresi e soddisfatti con regolarità i requisiti del cliente e i requisiti cogenti applicabili; siano determinati e affrontati i rischi e le opportunita che possono influenzare la conformità dei prodotti e dei servizi e la capacità di accrescere la soddisfazione del cliente; sia mantenuta la focalizzazione sull'accrescimento della soddisfazione del cliente.",
               evidences: [
                 "Analisi soddisfazione cliente",
                 "Gestione reclami",
@@ -109,21 +109,21 @@ const ISO_9001_2015 = {
         {
           id: "5.2",
           title: "Politica",
-          text: "L'alta direzione deve stabilire, attuare e mantenere una politica per la qualita.",
+          text: "L'alta direzione deve stabilire, attuare e mantenere una politica per la qualità.",
           subRequirements: [
             {
               id: "5.2.1",
-              title: "Stabilire la politica per la qualita",
-              text: "L'alta direzione deve stabilire, attuare e mantenere una politica per la qualita che: sia appropriata alle finalita e al contesto dell'organizzazione e supporti i suoi indirizzi strategici; costituisca un quadro di riferimento per fissare gli obiettivi per la qualita; comprenda un impegno a soddisfare i requisiti applicabili; comprenda un impegno al miglioramento continuo del SGQ.",
+              title: "Stabilire la politica per la qualità",
+              text: "L'alta direzione deve stabilire, attuare e mantenere una politica per la qualità che: sia appropriata alle finalità e al contesto dell'organizzazione e supporti i suoi indirizzi strategici; costituisca un quadro di riferimento per fissare gli obiettivi per la qualità; comprenda un impegno a soddisfare i requisiti applicabili; comprenda un impegno al miglioramento continuo del SGQ.",
               evidences: [
-                "Politica per la qualita documentata",
+                "Politica per la qualità documentata",
                 "Coerenza con contesto e strategia"
               ]
             },
             {
               id: "5.2.2",
-              title: "Comunicare la politica per la qualita",
-              text: "La politica per la qualita deve: essere disponibile e mantenuta come informazione documentata; essere comunicata, compresa e applicata all'interno dell'organizzazione; essere disponibile alle parti interessate rilevanti, per quanto appropriato.",
+              title: "Comunicare la politica per la qualità",
+              text: "La politica per la qualità deve: essere disponibile e mantenuta come informazione documentata; essere comunicata, compresa e applicata all'interno dell'organizzazione; essere disponibile alle parti interessate rilevanti, per quanto appropriato.",
               evidences: [
                 "Evidenze di comunicazione",
                 "Pubblicazione politica",
@@ -131,13 +131,13 @@ const ISO_9001_2015 = {
               ]
             }
           ],
-          mandatoryDocs: ["Politica per la qualita (documentata)"],
+          mandatoryDocs: ["Politica per la qualità (documentata)"],
           evidences: []
         },
         {
           id: "5.3",
-          title: "Ruoli, responsabilita e autorita nell'organizzazione",
-          text: "L'alta direzione deve assicurare che le responsabilita e le autorita per i ruoli pertinenti siano assegnate, comunicate e comprese all'interno dell'organizzazione. L'alta direzione deve assegnare la responsabilita e l'autorita per: assicurare che il SGQ sia conforme ai requisiti della presente norma; assicurare che i processi producano gli output attesi; riferire all'alta direzione sulle prestazioni del SGQ e sulle opportunita di miglioramento; assicurare la promozione della focalizzazione sul cliente; assicurare che l'integrita del SGQ sia mantenuta quando sono pianificate e attuate modifiche.",
+          title: "Ruoli, responsabilità e autorita nell'organizzazione",
+          text: "L'alta direzione deve assicurare che le responsabilità e le autorita per i ruoli pertinenti siano assegnate, comunicate e comprese all'interno dell'organizzazione. L'alta direzione deve assegnare la responsabilità e l'autorita per: assicurare che il SGQ sia conforme ai requisiti della presente norma; assicurare che i processi producano gli output attesi; riferire all'alta direzione sulle prestazioni del SGQ e sulle opportunita di miglioramento; assicurare la promozione della focalizzazione sul cliente; assicurare che l'integrità del SGQ sia mantenuta quando sono pianificate e attuate modifiche.",
           mandatoryDocs: [],
           evidences: [
             "Organigramma",
@@ -178,11 +178,11 @@ const ISO_9001_2015 = {
         },
         {
           id: "6.2",
-          title: "Obiettivi per la qualita e pianificazione per il loro raggiungimento",
-          text: "L'organizzazione deve stabilire gli obiettivi per la qualita relativi alle funzioni, ai livelli e ai processi pertinenti, necessari per il SGQ. Gli obiettivi per la qualita devono: essere coerenti con la politica per la qualita; essere misurabili; tenere conto dei requisiti applicabili; essere pertinenti alla conformita dei prodotti e dei servizi e all'accrescimento della soddisfazione del cliente; essere monitorati; essere comunicati; essere aggiornati per quanto appropriato.",
-          mandatoryDocs: ["Obiettivi per la qualita (documentati)"],
+          title: "Obiettivi per la qualità e pianificazione per il loro raggiungimento",
+          text: "L'organizzazione deve stabilire gli obiettivi per la qualità relativi alle funzioni, ai livelli e ai processi pertinenti, necessari per il SGQ. Gli obiettivi per la qualità devono: essere coerenti con la politica per la qualità; essere misurabili; tenere conto dei requisiti applicabili; essere pertinenti alla conformità dei prodotti e dei servizi e all'accrescimento della soddisfazione del cliente; essere monitorati; essere comunicati; essere aggiornati per quanto appropriato.",
+          mandatoryDocs: ["Obiettivi per la qualità (documentati)"],
           evidences: [
-            "Piano obiettivi qualita",
+            "Piano obiettivi qualità",
             "KPI e indicatori misurabili",
             "Stato avanzamento obiettivi",
             "Risorse allocate per obiettivi"
@@ -191,19 +191,19 @@ const ISO_9001_2015 = {
             {
               id: "6.2.1",
               title: "Definizione obiettivi",
-              text: "Gli obiettivi per la qualita devono essere coerenti con la politica, misurabili, monitorati, comunicati e aggiornati."
+              text: "Gli obiettivi per la qualità devono essere coerenti con la politica, misurabili, monitorati, comunicati e aggiornati."
             },
             {
               id: "6.2.2",
               title: "Pianificazione raggiungimento",
-              text: "Nel pianificare come raggiungere i propri obiettivi per la qualita, l'organizzazione deve determinare: cosa sara fatto; quali risorse saranno necessarie; chi ne sara responsabile; quando sara completato; come saranno valutati i risultati."
+              text: "Nel pianificare come raggiungere i propri obiettivi per la qualità, l'organizzazione deve determinare: cosa sara fatto; quali risorse saranno necessarie; chi ne sara responsabile; quando sara completato; come saranno valutati i risultati."
             }
           ]
         },
         {
           id: "6.3",
           title: "Pianificazione delle modifiche",
-          text: "Quando l'organizzazione determina l'esigenza di modifiche al SGQ, queste devono essere effettuate in modo pianificato. L'organizzazione deve considerare: le finalita delle modifiche e le loro potenziali conseguenze; l'integrita del SGQ; la disponibilita di risorse; l'allocazione o riallocazione delle responsabilita e autorita.",
+          text: "Quando l'organizzazione determina l'esigenza di modifiche al SGQ, queste devono essere effettuate in modo pianificato. L'organizzazione deve considerare: le finalità delle modifiche e le loro potenziali conseguenze; l'integrità del SGQ; la disponibilità di risorse; l'allocazione o riallocazione delle responsabilità e autorita.",
           mandatoryDocs: [],
           evidences: [
             "Procedura gestione modifiche",
@@ -227,8 +227,8 @@ const ISO_9001_2015 = {
             {
               id: "7.1.1",
               title: "Generalita",
-              text: "L'organizzazione deve considerare: le capacita e i vincoli relativi alle risorse interne esistenti; cosa e necessario ottenere dai fornitori esterni.",
-              evidences: ["Piano risorse", "Budget qualita"]
+              text: "L'organizzazione deve considerare: le capacità e i vincoli relativi alle risorse interne esistenti; cosa e necessario ottenere dai fornitori esterni.",
+              evidences: ["Piano risorse", "Budget qualità"]
             },
             {
               id: "7.1.2",
@@ -239,19 +239,19 @@ const ISO_9001_2015 = {
             {
               id: "7.1.3",
               title: "Infrastruttura",
-              text: "L'organizzazione deve determinare, fornire e manutenere l'infrastruttura necessaria per il funzionamento dei propri processi e per conseguire la conformita di prodotti e servizi.",
+              text: "L'organizzazione deve determinare, fornire e manutenere l'infrastruttura necessaria per il funzionamento dei propri processi e per conseguire la conformità di prodotti e servizi.",
               evidences: ["Elenco infrastrutture", "Piano manutenzione", "Registrazioni manutenzione"]
             },
             {
               id: "7.1.4",
               title: "Ambiente per il funzionamento dei processi",
-              text: "L'organizzazione deve determinare, predisporre e mantenere l'ambiente necessario per il funzionamento dei propri processi e per conseguire la conformita dei prodotti e dei servizi.",
+              text: "L'organizzazione deve determinare, predisporre e mantenere l'ambiente necessario per il funzionamento dei propri processi e per conseguire la conformità dei prodotti e dei servizi.",
               evidences: ["Valutazione ambiente di lavoro", "Monitoraggio condizioni ambientali"]
             },
             {
               id: "7.1.5",
               title: "Risorse per il monitoraggio e la misurazione",
-              text: "L'organizzazione deve determinare e mettere a disposizione le risorse necessarie per assicurare risultati validi e affidabili quando il monitoraggio o la misurazione sono utilizzati per verificare la conformita di prodotti e servizi ai requisiti.",
+              text: "L'organizzazione deve determinare e mettere a disposizione le risorse necessarie per assicurare risultati validi e affidabili quando il monitoraggio o la misurazione sono utilizzati per verificare la conformità di prodotti e servizi ai requisiti.",
               evidences: [
                 "Elenco strumenti di misura",
                 "Piano di taratura/verifica",
@@ -274,7 +274,7 @@ const ISO_9001_2015 = {
             {
               id: "7.1.6",
               title: "Conoscenza organizzativa",
-              text: "L'organizzazione deve determinare le conoscenze necessarie per il funzionamento dei propri processi e per conseguire la conformita dei prodotti e dei servizi. Tali conoscenze devono essere mantenute e rese disponibili nella misura necessaria.",
+              text: "L'organizzazione deve determinare le conoscenze necessarie per il funzionamento dei propri processi e per conseguire la conformità dei prodotti e dei servizi. Tali conoscenze devono essere mantenute e rese disponibili nella misura necessaria.",
               evidences: [
                 "Gestione knowledge base",
                 "Lessons learned",
@@ -286,7 +286,7 @@ const ISO_9001_2015 = {
         {
           id: "7.2",
           title: "Competenza",
-          text: "L'organizzazione deve: determinare la competenza necessaria delle persone che svolgono attivita sotto il suo controllo che influenzano le prestazioni e l'efficacia del SGQ; assicurare che tali persone siano competenti sulla base di istruzione, formazione e addestramento o esperienza appropriati; ove applicabile, intraprendere azioni per acquisire la competenza necessaria e valutare l'efficacia delle azioni intraprese; conservare appropriate informazioni documentate quale evidenza della competenza.",
+          text: "L'organizzazione deve: determinare la competenza necessaria delle persone che svolgono attività sotto il suo controllo che influenzano le prestazioni e l'efficacia del SGQ; assicurare che tali persone siano competenti sulla base di istruzione, formazione e addestramento o esperienza appropriati; ove applicabile, intraprendere azioni per acquisire la competenza necessaria e valutare l'efficacia delle azioni intraprese; conservare appropriate informazioni documentate quale evidenza della competenza.",
           mandatoryDocs: ["Evidenze di competenza (documentate)"],
           evidences: [
             "Matrice competenze",
@@ -299,7 +299,7 @@ const ISO_9001_2015 = {
         {
           id: "7.3",
           title: "Consapevolezza",
-          text: "L'organizzazione deve assicurare che le persone che svolgono attivita sotto il suo controllo siano consapevoli: della politica per la qualita; dei pertinenti obiettivi per la qualita; del proprio contributo all'efficacia del SGQ, compresi i benefici derivanti dal miglioramento delle prestazioni; delle implicazioni derivanti dal non essere conformi ai requisiti del SGQ.",
+          text: "L'organizzazione deve assicurare che le persone che svolgono attività sotto il suo controllo siano consapevoli: della politica per la qualità; dei pertinenti obiettivi per la qualità; del proprio contributo all'efficacia del SGQ, compresi i benefici derivanti dal miglioramento delle prestazioni; delle implicazioni derivanti dal non essere conformi ai requisiti del SGQ.",
           mandatoryDocs: [],
           evidences: [
             "Comunicazioni interne",
@@ -390,7 +390,7 @@ const ISO_9001_2015 = {
             {
               id: "8.2.3",
               title: "Riesame dei requisiti relativi ai prodotti e servizi",
-              text: "L'organizzazione deve assicurare di avere la capacita di soddisfare i requisiti per i prodotti e servizi da offrire ai clienti, conducendo un riesame prima di impegnarsi a fornire prodotti e servizi.",
+              text: "L'organizzazione deve assicurare di avere la capacità di soddisfare i requisiti per i prodotti e servizi da offrire ai clienti, conducendo un riesame prima di impegnarsi a fornire prodotti e servizi.",
               evidences: [
                 "Riesame contratti/ordini",
                 "Registrazioni riesame",
@@ -433,7 +433,7 @@ const ISO_9001_2015 = {
             {
               id: "8.3.2",
               title: "Pianificazione della progettazione e sviluppo",
-              text: "Nel determinare le fasi e i controlli per la progettazione e sviluppo, l'organizzazione deve considerare: natura, durata e complessita; fasi del processo; attivita di verifica e validazione; responsabilita e autorita; risorse interne ed esterne; interfacce; coinvolgimento clienti e utilizzatori; requisiti successivi; livello di controllo atteso.",
+              text: "Nel determinare le fasi e i controlli per la progettazione e sviluppo, l'organizzazione deve considerare: natura, durata e complessità; fasi del processo; attività di verifica e validazione; responsabilità e autorita; risorse interne ed esterne; interfacce; coinvolgimento clienti e utilizzatori; requisiti successivi; livello di controllo atteso.",
               evidences: ["Piano di progettazione", "Milestones progetto", "Risorse assegnate"]
             },
             {
@@ -445,7 +445,7 @@ const ISO_9001_2015 = {
             {
               id: "8.3.4",
               title: "Controlli della progettazione e sviluppo",
-              text: "L'organizzazione deve applicare controlli al processo di progettazione e sviluppo per assicurare che: siano definiti i risultati da conseguire; siano condotti riesami; siano condotte attivita di verifica; siano condotte attivita di validazione.",
+              text: "L'organizzazione deve applicare controlli al processo di progettazione e sviluppo per assicurare che: siano definiti i risultati da conseguire; siano condotti riesami; siano condotte attività di verifica; siano condotte attività di validazione.",
               evidences: ["Riesami di progettazione", "Verifiche e validazioni", "Registrazioni controlli"]
             },
             {
@@ -457,7 +457,7 @@ const ISO_9001_2015 = {
             {
               id: "8.3.6",
               title: "Modifiche della progettazione e sviluppo",
-              text: "L'organizzazione deve identificare, riesaminare e tenere sotto controllo le modifiche apportate durante o dopo la progettazione e sviluppo di prodotti e servizi, nella misura necessaria ad assicurare che non vi siano impatti negativi sulla conformita ai requisiti.",
+              text: "L'organizzazione deve identificare, riesaminare e tenere sotto controllo le modifiche apportate durante o dopo la progettazione e sviluppo di prodotti e servizi, nella misura necessaria ad assicurare che non vi siano impatti negativi sulla conformità ai requisiti.",
               evidences: ["Registro modifiche progettazione", "Valutazione impatto modifiche", "Approvazioni modifiche"]
             }
           ]
@@ -482,14 +482,14 @@ const ISO_9001_2015 = {
             {
               id: "8.4.2",
               title: "Tipo ed estensione del controllo",
-              text: "L'organizzazione deve assicurare che i processi, prodotti e servizi forniti dall'esterno non influenzino negativamente la capacita dell'organizzazione di fornire con regolarita ai propri clienti prodotti e servizi conformi.",
-              evidences: ["Livelli di controllo definiti", "Verifiche su forniture", "Impatto sulla conformita"]
+              text: "L'organizzazione deve assicurare che i processi, prodotti e servizi forniti dall'esterno non influenzino negativamente la capacità dell'organizzazione di fornire con regolarità ai propri clienti prodotti e servizi conformi.",
+              evidences: ["Livelli di controllo definiti", "Verifiche su forniture", "Impatto sulla conformità"]
             },
             {
               id: "8.4.3",
               title: "Informazioni ai fornitori esterni",
-              text: "L'organizzazione deve assicurare l'adeguatezza dei requisiti prima della loro comunicazione al fornitore esterno, comunicando i requisiti per processi, prodotti e servizi, approvazione, competenza delle persone, interazioni, controllo e monitoraggio, attivita di verifica.",
-              evidences: ["Ordini di acquisto", "Capitolati/specifiche", "Accordi qualita con fornitori"]
+              text: "L'organizzazione deve assicurare l'adeguatezza dei requisiti prima della loro comunicazione al fornitore esterno, comunicando i requisiti per processi, prodotti e servizi, approvazione, competenza delle persone, interazioni, controllo e monitoraggio, attività di verifica.",
+              evidences: ["Ordini di acquisto", "Capitolati/specifiche", "Accordi qualità con fornitori"]
             }
           ]
         },
@@ -503,13 +503,13 @@ const ISO_9001_2015 = {
             {
               id: "8.5.1",
               title: "Controllo della produzione e dell'erogazione dei servizi",
-              text: "Le condizioni controllate devono comprendere, per quanto applicabile: disponibilita di informazioni documentate; disponibilita e utilizzo di risorse per monitoraggio e misurazione; attuazione di attivita di monitoraggio e misurazione; utilizzo di infrastruttura e ambiente di processo idonei; designazione di persone competenti; validazione e rivalidazione periodica; attuazione di azioni per prevenire l'errore umano; attuazione di attivita di rilascio, consegna e post-consegna.",
+              text: "Le condizioni controllate devono comprendere, per quanto applicabile: disponibilità di informazioni documentate; disponibilità e utilizzo di risorse per monitoraggio e misurazione; attuazione di attività di monitoraggio e misurazione; utilizzo di infrastruttura e ambiente di processo idonei; designazione di persone competenti; validazione e rivalidazione periodica; attuazione di azioni per prevenire l'errore umano; attuazione di attività di rilascio, consegna e post-consegna.",
               evidences: ["Istruzioni operative", "Piani di controllo", "Registrazioni di produzione/erogazione"]
             },
             {
               id: "8.5.2",
               title: "Identificazione e rintracciabilita",
-              text: "L'organizzazione deve utilizzare mezzi idonei per identificare gli output quando cio e necessario per assicurare la conformita dei prodotti e dei servizi. L'organizzazione deve identificare lo stato degli output in relazione ai requisiti di monitoraggio e misurazione nel corso della produzione e dell'erogazione dei servizi.",
+              text: "L'organizzazione deve utilizzare mezzi idonei per identificare gli output quando cio e necessario per assicurare la conformità dei prodotti e dei servizi. L'organizzazione deve identificare lo stato degli output in relazione ai requisiti di monitoraggio e misurazione nel corso della produzione e dell'erogazione dei servizi.",
               evidences: ["Sistema di identificazione", "Sistema di rintracciabilita", "Registrazioni tracciabilita"]
             },
             {
@@ -521,19 +521,19 @@ const ISO_9001_2015 = {
             {
               id: "8.5.4",
               title: "Preservazione",
-              text: "L'organizzazione deve preservare gli output nel corso della produzione e dell'erogazione dei servizi, nella misura necessaria ad assicurare la conformita ai requisiti.",
+              text: "L'organizzazione deve preservare gli output nel corso della produzione e dell'erogazione dei servizi, nella misura necessaria ad assicurare la conformità ai requisiti.",
               evidences: ["Procedure di conservazione", "Condizioni di stoccaggio", "Gestione shelf life"]
             },
             {
               id: "8.5.5",
               title: "Attivita post-consegna",
-              text: "L'organizzazione deve soddisfare i requisiti per le attivita post-consegna associate ai prodotti e ai servizi.",
+              text: "L'organizzazione deve soddisfare i requisiti per le attività post-consegna associate ai prodotti e ai servizi.",
               evidences: ["Gestione garanzie", "Assistenza post-vendita", "Gestione resi"]
             },
             {
               id: "8.5.6",
               title: "Controllo delle modifiche",
-              text: "L'organizzazione deve riesaminare e tenere sotto controllo le modifiche alla produzione o all'erogazione dei servizi, nella misura necessaria ad assicurare il permanere della conformita ai requisiti.",
+              text: "L'organizzazione deve riesaminare e tenere sotto controllo le modifiche alla produzione o all'erogazione dei servizi, nella misura necessaria ad assicurare il permanere della conformità ai requisiti.",
               evidences: ["Registro modifiche produzione", "Riesame modifiche", "Autorizzazione modifiche"]
             }
           ]
@@ -556,20 +556,20 @@ const ISO_9001_2015 = {
           text: "L'organizzazione deve assicurare che gli output che non sono conformi ai relativi requisiti siano identificati e tenuti sotto controllo per prevenirne l'utilizzo o la consegna involontaria.",
           mandatoryDocs: [],
           evidences: [
-            "Procedura gestione non conformita prodotto",
-            "Registrazioni non conformita",
+            "Procedura gestione non conformità prodotto",
+            "Registrazioni non conformità",
             "Azioni intraprese (correzione, segregazione, concessione, ecc.)"
           ],
           subRequirements: [
             {
               id: "8.7.1",
               title: "Trattamento output non conformi",
-              text: "L'organizzazione deve trattare gli output non conformi in uno o piu dei seguenti modi: correzione; segregazione, contenimento, reso o sospensione della fornitura; informazione al cliente; ottenimento dell'autorizzazione per l'accettazione in concessione."
+              text: "L'organizzazione deve trattare gli output non conformi in uno o piùdei seguenti modi: correzione; segregazione, contenimento, reso o sospensione della fornitura; informazione al cliente; ottenimento dell'autorizzazione per l'accettazione in concessione."
             },
             {
               id: "8.7.2",
               title: "Informazioni documentate NC",
-              text: "L'organizzazione deve conservare informazioni documentate che descrivano la non conformita, le azioni intraprese, le concessioni ottenute, l'autorita che ha deciso le azioni in merito alla non conformita."
+              text: "L'organizzazione deve conservare informazioni documentate che descrivano la non conformità, le azioni intraprese, le concessioni ottenute, l'autorita che ha deciso le azioni in merito alla non conformità."
             }
           ]
         }
@@ -611,7 +611,7 @@ const ISO_9001_2015 = {
             {
               id: "9.1.3",
               title: "Analisi e valutazione",
-              text: "L'organizzazione deve analizzare e valutare dati e informazioni appropriati che emergono dal monitoraggio e dalla misurazione. I risultati dell'analisi devono essere utilizzati per valutare: conformita di prodotti e servizi; grado di soddisfazione del cliente; prestazioni e efficacia del SGQ; efficacia della pianificazione; efficacia delle azioni per affrontare rischi e opportunita; prestazioni dei fornitori esterni; necessita di miglioramenti al SGQ.",
+              text: "L'organizzazione deve analizzare e valutare dati e informazioni appropriati che emergono dal monitoraggio e dalla misurazione. I risultati dell'analisi devono essere utilizzati per valutare: conformità di prodotti e servizi; grado di soddisfazione del cliente; prestazioni e efficacia del SGQ; efficacia della pianificazione; efficacia delle azioni per affrontare rischi e opportunita; prestazioni dei fornitori esterni; necessità di miglioramenti al SGQ.",
               evidences: [
                 "Report analisi dati",
                 "Statistiche di processo",
@@ -639,7 +639,7 @@ const ISO_9001_2015 = {
             {
               id: "9.2.1",
               title: "Pianificazione audit",
-              text: "L'organizzazione deve pianificare, stabilire, attuare e mantenere uno o piu programmi di audit comprensivi di frequenza, metodi, responsabilita, requisiti di pianificazione e reporting."
+              text: "L'organizzazione deve pianificare, stabilire, attuare e mantenere uno o piùprogrammi di audit comprensivi di frequenza, metodi, responsabilità, requisiti di pianificazione e reporting."
             },
             {
               id: "9.2.2",
@@ -664,7 +664,7 @@ const ISO_9001_2015 = {
             {
               id: "9.3.2",
               title: "Input al riesame di direzione",
-              text: "Il riesame di direzione deve essere pianificato e condotto tenendo conto di: stato delle azioni derivanti da precedenti riesami; modifiche nei fattori esterni e interni; informazioni sulle prestazioni e l'efficacia del SGQ (soddisfazione cliente, obiettivi qualita, prestazioni di processo, non conformita e azioni correttive, risultati monitoraggio e misurazione, risultati audit, prestazioni fornitori esterni); adeguatezza delle risorse; efficacia delle azioni intraprese per affrontare rischi e opportunita; opportunita di miglioramento.",
+              text: "Il riesame di direzione deve essere pianificato e condotto tenendo conto di: stato delle azioni derivanti da precedenti riesami; modifiche nei fattori esterni e interni; informazioni sulle prestazioni e l'efficacia del SGQ (soddisfazione cliente, obiettivi qualità, prestazioni di processo, non conformità e azioni correttive, risultati monitoraggio e misurazione, risultati audit, prestazioni fornitori esterni); adeguatezza delle risorse; efficacia delle azioni intraprese per affrontare rischi e opportunita; opportunita di miglioramento.",
               evidences: [
                 "Dati di input preparati",
                 "Report prestazioni SGQ",
@@ -674,7 +674,7 @@ const ISO_9001_2015 = {
             {
               id: "9.3.3",
               title: "Output del riesame di direzione",
-              text: "Gli output del riesame di direzione devono comprendere le decisioni e le azioni relative a: opportunita di miglioramento; ogni esigenza di modifica al SGQ; necessita di risorse.",
+              text: "Gli output del riesame di direzione devono comprendere le decisioni e le azioni relative a: opportunita di miglioramento; ogni esigenza di modifica al SGQ; necessità di risorse.",
               evidences: [
                 "Verbale riesame direzione",
                 "Decisioni e azioni approvate",
@@ -702,26 +702,26 @@ const ISO_9001_2015 = {
         },
         {
           id: "10.2",
-          title: "Non conformita e azioni correttive",
-          text: "Quando si verifica una non conformita, comprese quelle derivanti da reclami, l'organizzazione deve: reagire alla non conformita; valutare l'esigenza di azioni per eliminare le cause; attuare ogni azione necessaria; riesaminare l'efficacia delle azioni correttive intraprese; se necessario, apportare modifiche al SGQ.",
-          mandatoryDocs: ["Registrazioni non conformita e azioni correttive (documentate)"],
+          title: "Non conformità e azioni correttive",
+          text: "Quando si verifica una non conformità, comprese quelle derivanti da reclami, l'organizzazione deve: reagire alla non conformità; valutare l'esigenza di azioni per eliminare le cause; attuare ogni azione necessaria; riesaminare l'efficacia delle azioni correttive intraprese; se necessario, apportare modifiche al SGQ.",
+          mandatoryDocs: ["Registrazioni non conformità e azioni correttive (documentate)"],
           evidences: [
-            "Registro non conformita",
+            "Registro non conformità",
             "Analisi cause radice",
             "Piano azioni correttive",
             "Verifica efficacia azioni correttive",
-            "Trend non conformita"
+            "Trend non conformità"
           ],
           subRequirements: [
             {
               id: "10.2.1",
-              title: "Gestione non conformita",
-              text: "L'organizzazione deve reagire alla non conformita, intraprendere azioni per tenerla sotto controllo e correggerla, affrontarne le conseguenze."
+              title: "Gestione non conformità",
+              text: "L'organizzazione deve reagire alla non conformità, intraprendere azioni per tenerla sotto controllo e correggerla, affrontarne le conseguenze."
             },
             {
               id: "10.2.2",
               title: "Informazioni documentate NC",
-              text: "L'organizzazione deve conservare informazioni documentate quale evidenza: della natura delle non conformita e di ogni successiva azione intrapresa; dei risultati di qualsiasi azione correttiva."
+              text: "L'organizzazione deve conservare informazioni documentate quale evidenza: della natura delle non conformità e di ogni successiva azione intrapresa; dei risultati di qualsiasi azione correttiva."
             }
           ]
         },

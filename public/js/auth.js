@@ -105,8 +105,12 @@ const AuthUI = {
       errorEl.classList.add('hidden');
 
       try {
-        await ApiClient.login(fd.get('email'), fd.get('password'));
-        window.location.reload();
+        const data = await ApiClient.login(fd.get('email'), fd.get('password'));
+        if (data.user?.passwordChangeRequired) {
+          this._showForcePasswordChange();
+        } else {
+          window.location.reload();
+        }
       } catch (err) {
         errorEl.textContent = err.message;
         errorEl.classList.remove('hidden');
@@ -128,8 +132,12 @@ const AuthUI = {
       errorEl.classList.add('hidden');
 
       try {
-        await ApiClient.register(fd.get('email'), fd.get('password'), fd.get('name'));
-        window.location.reload();
+        const data = await ApiClient.register(fd.get('email'), fd.get('password'), fd.get('name'));
+        if (data.pendingApproval) {
+          this._showPendingApproval();
+        } else {
+          window.location.reload();
+        }
       } catch (err) {
         errorEl.textContent = err.message;
         errorEl.classList.remove('hidden');
@@ -138,6 +146,102 @@ const AuthUI = {
         if (window.lucide) lucide.createIcons();
       }
     });
+  },
+
+  _showForcePasswordChange() {
+    const container = document.querySelector('.w-full.max-w-md');
+    // Hide tabs and form panels
+    container.querySelector('.bg-white.rounded-xl.border.border-slate-200.p-1')?.classList.add('hidden');
+    document.getElementById('login-panel').classList.add('hidden');
+    document.getElementById('register-panel').classList.add('hidden');
+
+    // Show password change form
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-xl border border-slate-200 p-6 shadow-sm';
+    div.innerHTML = `
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+          <i data-lucide="key" class="w-5 h-5 text-amber-600"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-slate-800">Cambio password obbligatorio</h2>
+          <p class="text-sm text-slate-500">Per sicurezza, cambia la password predefinita</p>
+        </div>
+      </div>
+      <form id="force-password-form" class="space-y-4">
+        <div>
+          <label class="form-label">Nuova password (min. 6 caratteri)</label>
+          <input type="password" name="newPassword" required minlength="6" autocomplete="new-password"
+                 class="form-input" placeholder="Scegli una password sicura">
+        </div>
+        <div>
+          <label class="form-label">Conferma password</label>
+          <input type="password" name="confirmPassword" required minlength="6"
+                 class="form-input" placeholder="Ripeti la password">
+        </div>
+        <div id="force-pw-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+        <button type="submit" id="force-pw-btn" class="btn-primary w-full justify-center">
+          <i data-lucide="check" class="w-4 h-4"></i> Salva e Accedi
+        </button>
+      </form>`;
+    container.appendChild(div);
+    if (window.lucide) lucide.createIcons();
+
+    document.getElementById('force-password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const errorEl = document.getElementById('force-pw-error');
+      const btn = document.getElementById('force-pw-btn');
+
+      const newPw = fd.get('newPassword');
+      const confirmPw = fd.get('confirmPassword');
+
+      if (newPw !== confirmPw) {
+        errorEl.textContent = 'Le password non corrispondono';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Salvataggio...';
+      errorEl.classList.add('hidden');
+
+      try {
+        await ApiClient.changePassword(null, newPw);
+        window.location.reload();
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Salva e Accedi';
+        if (window.lucide) lucide.createIcons();
+      }
+    });
+  },
+
+  _showPendingApproval() {
+    const container = document.querySelector('.w-full.max-w-md');
+    // Hide tabs and form panels
+    container.querySelector('.bg-white.rounded-xl.border.border-slate-200.p-1')?.classList.add('hidden');
+    document.getElementById('login-panel')?.classList.add('hidden');
+    document.getElementById('register-panel')?.classList.add('hidden');
+
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-xl border border-slate-200 p-6 shadow-sm text-center';
+    div.innerHTML = `
+      <div class="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="clock" class="w-8 h-8 text-amber-500"></i>
+      </div>
+      <h2 class="text-lg font-semibold text-slate-800 mb-2">Account creato con successo</h2>
+      <p class="text-sm text-slate-500 mb-4">Il tuo account è in attesa di approvazione da parte dell'amministratore. Riceverai l'accesso una volta approvato.</p>
+      <button onclick="ApiClient.clearAuth(); window.location.reload();" class="btn-secondary">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Torna al login
+      </button>`;
+    container.appendChild(div);
+    if (window.lucide) lucide.createIcons();
+
+    // Clear token since user can't actually access the app
+    ApiClient.clearAuth();
   },
 
   _showPanel(panel) {
