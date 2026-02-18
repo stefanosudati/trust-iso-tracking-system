@@ -53,6 +53,24 @@ db.exec(`
     created_at        TEXT DEFAULT (datetime('now')),
     updated_at        TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS changelog (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id      TEXT NOT NULL,
+    requirement_id  TEXT NOT NULL,
+    user_id         INTEGER NOT NULL,
+    user_name       TEXT NOT NULL,
+    field           TEXT NOT NULL,
+    old_value       TEXT,
+    new_value       TEXT,
+    created_at      TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_changelog_project
+    ON changelog(project_id, created_at DESC);
+
+  CREATE INDEX IF NOT EXISTS idx_changelog_req
+    ON changelog(project_id, requirement_id, created_at DESC);
 `);
 
 // Migrations

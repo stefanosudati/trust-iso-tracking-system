@@ -221,6 +221,55 @@ router.put('/:id/evaluations/:reqId', (req, res) => {
     });
   }
 
+  // ── Changelog diff logic ──
+  const TRACKED_FIELDS = ['status', 'notes', 'priority', 'responsible', 'deadline', 'auditNotes', 'naJustification'];
+
+  const user = db.prepare('SELECT name FROM users WHERE id = ?').get(req.userId);
+  const userName = user ? user.name : 'Utente sconosciuto';
+
+  const insertChangelog = db.prepare(`
+    INSERT INTO changelog (project_id, requirement_id, user_id, user_name, field, old_value, new_value)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const changes = [];
+
+  if (prev) {
+    for (const field of TRACKED_FIELDS) {
+      const oldVal = prev[field] ?? '';
+      const newVal = evaluation[field] ?? '';
+      if (String(oldVal) !== String(newVal)) {
+        changes.push({ field, oldValue: String(oldVal), newValue: String(newVal) });
+      }
+    }
+    // Compare actions (JSON)
+    const oldActions = JSON.stringify(prev.actions || []);
+    const newActions = JSON.stringify(evaluation.actions || []);
+    if (oldActions !== newActions) {
+      changes.push({ field: 'actions', oldValue: oldActions, newValue: newActions });
+    }
+    // Compare evidenceNotes (JSON)
+    const oldEvidence = JSON.stringify((prev.evidenceNotes || []).sort());
+    const newEvidence = JSON.stringify((evaluation.evidenceNotes || []).sort());
+    if (oldEvidence !== newEvidence) {
+      changes.push({ field: 'evidenceNotes', oldValue: oldEvidence, newValue: newEvidence });
+    }
+  } else {
+    // First evaluation — log initial status if meaningful
+    if (evaluation.status && evaluation.status !== 'not_evaluated') {
+      changes.push({ field: 'status', oldValue: 'not_evaluated', newValue: evaluation.status });
+    }
+  }
+
+  if (changes.length > 0) {
+    const insertMany = db.transaction((items) => {
+      for (const c of items) {
+        insertChangelog.run(req.params.id, req.params.reqId, req.userId, userName, c.field, c.oldValue, c.newValue);
+      }
+    });
+    insertMany(changes);
+  }
+
   evaluations[req.params.reqId] = evaluation;
 
   db.prepare(
@@ -309,6 +358,48 @@ router.put('/:id/milestones', (req, res) => {
   ).run(JSON.stringify(req.body), req.params.id);
 
   res.json(req.body);
+});
+
+// ─── GET /api/projects/:id/changelog ──────────────────────
+
+router.get('/:id/changelog', (req, res) => {
+  const project = db.prepare(
+    'SELECT id FROM projects WHERE id = ? AND user_id = ?'
+  ).get(req.params.id, req.userId);
+  if (!project) return res.status(404).json({ error: 'Progetto non trovato' });
+
+  const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+  const offset = parseInt(req.query.offset) || 0;
+
+  const rows = db.prepare(`
+    SELECT * FROM changelog
+    WHERE project_id = ?
+    ORDER BY created_at DESC
+    LIMIT ? OFFSET ?
+  `).all(req.params.id, limit, offset);
+
+  const total = db.prepare(
+    'SELECT COUNT(*) as count FROM changelog WHERE project_id = ?'
+  ).get(req.params.id);
+
+  res.json({ entries: rows, total: total.count });
+});
+
+// ─── GET /api/projects/:id/changelog/:reqId ───────────────
+
+router.get('/:id/changelog/:reqId', (req, res) => {
+  const project = db.prepare(
+    'SELECT id FROM projects WHERE id = ? AND user_id = ?'
+  ).get(req.params.id, req.userId);
+  if (!project) return res.status(404).json({ error: 'Progetto non trovato' });
+
+  const rows = db.prepare(`
+    SELECT * FROM changelog
+    WHERE project_id = ? AND requirement_id = ?
+    ORDER BY created_at DESC
+  `).all(req.params.id, req.params.reqId);
+
+  res.json({ entries: rows });
 });
 
 module.exports = router;

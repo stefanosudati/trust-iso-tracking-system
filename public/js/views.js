@@ -694,6 +694,24 @@ const Views = {
           ${project.notes ? `<div class="mt-4 p-3 bg-slate-50 rounded-lg text-sm text-slate-600"><strong>Note:</strong> ${project.notes}</div>` : ''}
         </div>
       </div>
+
+      <!-- Full Changelog Section -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-slate-800 flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Change Log Completo
+          </h3>
+          <div class="flex items-center gap-2">
+            <select id="changelog-filter-req" class="form-input text-sm py-1 px-2">
+              <option value="">Tutti i requisiti</option>
+            </select>
+            <button id="changelog-load-more" class="btn-secondary text-sm hidden">Carica altri</button>
+          </div>
+        </div>
+        <div id="project-changelog-list">
+          <div class="text-sm text-slate-400 text-center py-4">Caricamento change log...</div>
+        </div>
+      </div>
     </div>`;
   },
 
@@ -701,7 +719,107 @@ const Views = {
     return `<div><dt class="text-slate-500">${label}</dt><dd class="font-medium text-slate-800">${value || '-'}</dd></div>`;
   },
 
-  bindProjectDetail() {},
+  bindProjectDetail(project) {
+    if (!project) return;
+
+    let currentOffset = 0;
+    const pageSize = 50;
+
+    const loadChangelog = async (offset = 0, append = false) => {
+      try {
+        const data = await ApiClient.getProjectChangelog(project.id, pageSize, offset);
+        const container = document.getElementById('project-changelog-list');
+
+        if (data.entries.length === 0 && offset === 0) {
+          container.innerHTML = '<div class="text-sm text-slate-400 text-center py-4">Nessuna modifica registrata</div>';
+          return;
+        }
+
+        let html = '';
+        for (const entry of data.entries) {
+          const time = new Date(entry.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          const date = App.formatDate(entry.created_at);
+          html += `
+            <div class="flex items-center gap-3 py-2 px-2 text-sm border-b border-slate-50 hover:bg-slate-50 rounded">
+              <span class="text-xs text-slate-400 w-24 flex-shrink-0">${date} ${time}</span>
+              <a href="#" class="changelog-req-link font-medium w-14 flex-shrink-0" style="color: var(--primary-text-light);"
+                 data-req="${entry.requirement_id}">${entry.requirement_id}</a>
+              <span class="text-slate-600 w-24 flex-shrink-0">${Views._fieldLabel(entry.field)}</span>
+              <span class="text-slate-500 flex-1 truncate">${Views._formatChangeValue(entry.field, entry.old_value)} &rarr; ${Views._formatChangeValue(entry.field, entry.new_value)}</span>
+              <span class="text-xs text-slate-400 w-28 flex-shrink-0 text-right">${entry.user_name}</span>
+            </div>`;
+        }
+
+        if (append) {
+          container.insertAdjacentHTML('beforeend', html);
+        } else {
+          container.innerHTML = html;
+        }
+
+        const loadMoreBtn = document.getElementById('changelog-load-more');
+        if (data.total > offset + pageSize) {
+          loadMoreBtn.classList.remove('hidden');
+        } else {
+          loadMoreBtn.classList.add('hidden');
+        }
+
+        // Bind requirement links
+        container.querySelectorAll('.changelog-req-link').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            App.navigate('requirement', { currentRequirement: link.dataset.req });
+          });
+        });
+
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        document.getElementById('project-changelog-list').innerHTML =
+          '<div class="text-sm text-red-500 text-center py-4">Errore: ' + err.message + '</div>';
+      }
+    };
+
+    // Initial load
+    loadChangelog(0);
+
+    // Load more
+    document.getElementById('changelog-load-more')?.addEventListener('click', () => {
+      currentOffset += pageSize;
+      loadChangelog(currentOffset, true);
+    });
+
+    // Filter by requirement
+    document.getElementById('changelog-filter-req')?.addEventListener('change', async (e) => {
+      const reqId = e.target.value;
+      if (reqId) {
+        try {
+          const data = await ApiClient.getRequirementChangelog(project.id, reqId);
+          document.getElementById('project-changelog-list').innerHTML =
+            Views._renderChangelogEntries(data.entries);
+          document.getElementById('changelog-load-more').classList.add('hidden');
+          if (window.lucide) lucide.createIcons();
+        } catch (err) {
+          document.getElementById('project-changelog-list').innerHTML =
+            '<div class="text-sm text-red-500 text-center py-4">Errore</div>';
+        }
+      } else {
+        currentOffset = 0;
+        loadChangelog(0);
+      }
+    });
+
+    // Populate requirement filter dropdown
+    const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
+    if (cert) {
+      const allReqs = flattenRequirements(cert.clauses);
+      const select = document.getElementById('changelog-filter-req');
+      allReqs.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.id + ' - ' + App.truncate(r.title, 30);
+        select.appendChild(opt);
+      });
+    }
+  },
 
   // ============================================================
   // CLAUSE VIEW (Gap Analysis per clause)
@@ -813,11 +931,14 @@ const Views = {
         <span class="text-slate-700">${reqId}</span>
       </div>
 
-      <!-- Title -->
-      <div>
+      <!-- Title + Changelog Button -->
+      <div class="flex items-center justify-between">
         <h1 class="text-xl font-bold text-slate-800">
           <span style="color: var(--primary-text-light);">${reqId}</span> ${req.title}
         </h1>
+        <button id="btn-open-changelog" class="btn-secondary text-sm">
+          <i data-lucide="history" class="w-4 h-4"></i> Change Log
+        </button>
       </div>
 
       <!-- Requirement Text -->
@@ -925,22 +1046,6 @@ const Views = {
         </div>
 
         <!-- History -->
-        ${(ev.history && ev.history.length) ? `
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
-          <h3 class="font-semibold text-slate-800 mb-3">Storico Modifiche</h3>
-          <div class="space-y-2">
-            ${ev.history.map(h => `
-              <div class="flex items-center gap-3 text-sm">
-                <span class="text-slate-500">${App.formatDate(h.date)}</span>
-                <span>${App.statusLabel(h.fromStatus)}</span>
-                <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400"></i>
-                <span class="font-medium">${App.statusLabel(h.toStatus)}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        ` : ''}
-
         <!-- Save + Nav -->
         <div class="flex items-center justify-between">
           <div class="flex gap-2">
@@ -959,7 +1064,24 @@ const Views = {
           </div>
         </div>
       </form>
-    </div>`;
+    </div>
+
+    <!-- Changelog Slide-In Panel -->
+    <div id="changelog-panel" class="fixed inset-y-0 right-0 w-96 max-w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col"
+         style="border-left: 1px solid #e2e8f0;">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <h3 class="font-semibold text-slate-800 flex items-center gap-2">
+          <i data-lucide="history" class="w-4 h-4"></i> Change Log — ${reqId}
+        </h3>
+        <button id="btn-close-changelog" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="changelog-entries" class="flex-1 overflow-y-auto p-4">
+        <div class="text-sm text-slate-400 text-center py-8">Caricamento...</div>
+      </div>
+    </div>
+    <div id="changelog-overlay" class="hidden fixed inset-0 bg-black/20 z-40"></div>`;
   },
 
   _statusRadio(value, label, colorClass, current) {
@@ -970,6 +1092,74 @@ const Views = {
       <input type="radio" name="status" value="${value}" ${checked ? 'checked' : ''} class="sr-only">
       <span class="text-sm font-medium">${label}</span>
     </label>`;
+  },
+
+  // ============================================================
+  // CHANGELOG HELPERS
+  // ============================================================
+  _fieldLabel(field) {
+    const labels = {
+      status: 'Stato',
+      notes: 'Note',
+      priority: 'Priorità',
+      responsible: 'Responsabile',
+      deadline: 'Scadenza',
+      actions: 'Azioni Correttive',
+      evidenceNotes: 'Evidenze',
+      auditNotes: 'Note Audit',
+      naJustification: 'Motivazione N/A'
+    };
+    return labels[field] || field;
+  },
+
+  _formatChangeValue(field, value) {
+    if (!value || value === '') return '<span class="text-slate-400 italic">vuoto</span>';
+    if (field === 'status') return App.statusLabel(value);
+    if (field === 'priority') return App.priorityLabel(value);
+    if (field === 'deadline') return App.formatDate(value);
+    if (field === 'actions') {
+      try { const arr = JSON.parse(value); return arr.length + ' azione/i'; }
+      catch { return value; }
+    }
+    if (field === 'evidenceNotes') {
+      try { const arr = JSON.parse(value); return arr.length + ' evidenza/e'; }
+      catch { return value; }
+    }
+    return value.length > 80 ? value.substring(0, 80) + '…' : value;
+  },
+
+  _renderChangelogEntries(entries) {
+    if (!entries || entries.length === 0) {
+      return '<div class="text-sm text-slate-400 text-center py-8">Nessuna modifica registrata</div>';
+    }
+
+    let currentDate = '';
+    let html = '';
+
+    for (const entry of entries) {
+      const entryDate = App.formatDate(entry.created_at);
+      if (entryDate !== currentDate) {
+        currentDate = entryDate;
+        html += `<div class="text-xs font-semibold text-slate-500 mt-4 mb-2 first:mt-0">${entryDate}</div>`;
+      }
+      const time = new Date(entry.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      html += `
+        <div class="mb-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-medium" style="color: var(--primary-text);">${entry.user_name}</span>
+            <span class="text-xs text-slate-400">${time}</span>
+          </div>
+          <div class="text-sm text-slate-700">
+            <span class="font-medium">${this._fieldLabel(entry.field)}</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 text-xs">
+            <span class="text-slate-500">${this._formatChangeValue(entry.field, entry.old_value)}</span>
+            <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400 flex-shrink-0"></i>
+            <span class="font-medium text-slate-700">${this._formatChangeValue(entry.field, entry.new_value)}</span>
+          </div>
+        </div>`;
+    }
+    return html;
   },
 
   bindRequirementDetail(project, reqId) {
@@ -994,6 +1184,31 @@ const Views = {
         document.getElementById('na-justification')?.classList.toggle('hidden', radio.value !== 'not_applicable');
       });
     });
+
+    // Changelog panel open/close
+    const changelogPanel = document.getElementById('changelog-panel');
+    const changelogOverlay = document.getElementById('changelog-overlay');
+
+    document.getElementById('btn-open-changelog')?.addEventListener('click', async () => {
+      changelogPanel.classList.remove('translate-x-full');
+      changelogOverlay.classList.remove('hidden');
+      try {
+        const data = await ApiClient.getRequirementChangelog(project.id, reqId);
+        document.getElementById('changelog-entries').innerHTML =
+          Views._renderChangelogEntries(data.entries);
+        if (window.lucide) lucide.createIcons();
+      } catch (err) {
+        document.getElementById('changelog-entries').innerHTML =
+          '<div class="text-sm text-red-500 text-center py-4">Errore: ' + err.message + '</div>';
+      }
+    });
+
+    const closeChangelog = () => {
+      changelogPanel.classList.add('translate-x-full');
+      changelogOverlay.classList.add('hidden');
+    };
+    document.getElementById('btn-close-changelog')?.addEventListener('click', closeChangelog);
+    changelogOverlay?.addEventListener('click', closeChangelog);
 
     // Add action
     document.getElementById('add-action')?.addEventListener('click', () => {
@@ -1501,11 +1716,26 @@ const Views = {
   bindReports(project) {
     if (!project) return;
 
-    document.getElementById('export-gap-pdf')?.addEventListener('click', () => PDFExport.gapAnalysis(project));
-    document.getElementById('export-plan-pdf')?.addEventListener('click', () => PDFExport.implementationPlan(project));
-    document.getElementById('export-executive-pdf')?.addEventListener('click', () => PDFExport.executiveSummary(project));
-    document.getElementById('export-docs-checklist')?.addEventListener('click', () => PDFExport.docsChecklist(project));
-    document.getElementById('export-nc-register')?.addEventListener('click', () => PDFExport.ncRegister(project));
+    const safePDF = (fn) => {
+      return () => {
+        if (!window.jspdf) {
+          App.showToast('Errore: libreria jsPDF non caricata. Verifica la connessione e ricarica la pagina.', 'error');
+          return;
+        }
+        try {
+          fn(project);
+        } catch (err) {
+          console.error('Errore generazione PDF:', err);
+          App.showToast('Errore nella generazione del PDF: ' + err.message, 'error');
+        }
+      };
+    };
+
+    document.getElementById('export-gap-pdf')?.addEventListener('click', safePDF(p => PDFExport.gapAnalysis(p)));
+    document.getElementById('export-plan-pdf')?.addEventListener('click', safePDF(p => PDFExport.implementationPlan(p)));
+    document.getElementById('export-executive-pdf')?.addEventListener('click', safePDF(p => PDFExport.executiveSummary(p)));
+    document.getElementById('export-docs-checklist')?.addEventListener('click', safePDF(p => PDFExport.docsChecklist(p)));
+    document.getElementById('export-nc-register')?.addEventListener('click', safePDF(p => PDFExport.ncRegister(p)));
     document.getElementById('export-json')?.addEventListener('click', () => App.exportData());
   },
 

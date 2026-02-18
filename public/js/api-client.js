@@ -302,6 +302,20 @@ const ApiClient = {
     return stats;
   },
 
+  // ─── Changelog ──────────────────────────────────────────────
+
+  async getProjectChangelog(projectId, limit = 100, offset = 0) {
+    return await this._fetch(
+      '/projects/' + projectId + '/changelog?limit=' + limit + '&offset=' + offset
+    );
+  },
+
+  async getRequirementChangelog(projectId, reqId) {
+    return await this._fetch(
+      '/projects/' + projectId + '/changelog/' + reqId
+    );
+  },
+
   // ─── Export / Import ──────────────────────────────────────
 
   exportAllData() {

@@ -13,6 +13,9 @@ const PDFExport = {
   },
 
   _initDoc(title) {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('La libreria jsPDF non è disponibile. Ricarica la pagina.');
+    }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     doc.setFont('helvetica');
@@ -61,6 +64,7 @@ const PDFExport = {
   // GAP ANALYSIS REPORT
   // ===========================================================
   gapAnalysis(project) {
+    try {
     const doc = this._initDoc('Gap Analysis');
     const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
     if (!cert) return;
@@ -83,7 +87,7 @@ const PDFExport = {
         ['Non conformi', stats.notImplemented],
         ['Non applicabili', stats.notApplicable],
         ['Non valutati', stats.notEvaluated],
-        ['% Conformita', stats.compliancePercent + '%'],
+        ['% Conformità', stats.compliancePercent + '%'],
         ['% Progresso', stats.progressPercent + '%']
       ];
 
@@ -169,12 +173,14 @@ const PDFExport = {
     this._footer(doc);
     doc.save(`Gap-Analysis-${project.clientName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
     App.showToast('Report Gap Analysis generato', 'success');
+    } catch (err) { console.error('Errore Gap Analysis PDF:', err); App.showToast('Errore generazione PDF: ' + err.message, 'error'); }
   },
 
   // ===========================================================
   // IMPLEMENTATION PLAN
   // ===========================================================
   implementationPlan(project) {
+    try {
     const doc = this._initDoc('Piano Implementazione');
     const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
     if (!cert) return;
@@ -200,7 +206,7 @@ const PDFExport = {
       doc.text('Azione', 45, y);
       doc.text('Responsabile', 130, y);
       doc.text('Scadenza', 160, y);
-      doc.text('Priorita', 185, y);
+      doc.text('Priorità', 185, y);
       y += 8;
 
       for (const req of actionsReqs) {
@@ -241,12 +247,14 @@ const PDFExport = {
     this._footer(doc);
     doc.save(`Piano-Implementazione-${project.clientName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
     App.showToast('Piano di implementazione generato', 'success');
+    } catch (err) { console.error('Errore Piano PDF:', err); App.showToast('Errore generazione PDF: ' + err.message, 'error'); }
   },
 
   // ===========================================================
   // EXECUTIVE SUMMARY
   // ===========================================================
   executiveSummary(project) {
+    try {
     const doc = this._initDoc('Executive Summary');
     const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
     if (!cert) return;
@@ -274,7 +282,7 @@ const PDFExport = {
       doc.text(`${stats.compliancePercent}%`, 15, y);
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text('Conformita complessiva', 35, y);
+      doc.text('Conformità complessiva', 35, y);
       y += 8;
 
       doc.setFontSize(14);
@@ -316,12 +324,14 @@ const PDFExport = {
     this._footer(doc);
     doc.save(`Executive-Summary-${project.clientName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
     App.showToast('Executive Summary generato', 'success');
+    } catch (err) { console.error('Errore Executive Summary PDF:', err); App.showToast('Errore generazione PDF: ' + err.message, 'error'); }
   },
 
   // ===========================================================
   // DOCUMENTS CHECKLIST
   // ===========================================================
   docsChecklist(project) {
+    try {
     const doc = this._initDoc('Checklist Documenti');
     const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
     if (!cert) return;
@@ -378,17 +388,19 @@ const PDFExport = {
     this._footer(doc);
     doc.save(`Checklist-Documenti-${project.clientName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
     App.showToast('Checklist documenti generata', 'success');
+    } catch (err) { console.error('Errore Checklist PDF:', err); App.showToast('Errore generazione PDF: ' + err.message, 'error'); }
   },
 
   // ===========================================================
   // NC REGISTER
   // ===========================================================
   ncRegister(project) {
+    try {
     const doc = this._initDoc('Registro NC');
     const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
     if (!cert) return;
 
-    let y = this._header(doc, 'Registro Non Conformita', cert.name, project);
+    let y = this._header(doc, 'Registro Non Conformità', cert.name, project);
 
     const allReqs = flattenRequirements(cert.clauses);
     const ncReqs = allReqs.filter(r => {
@@ -421,7 +433,7 @@ const PDFExport = {
           doc.text('Descrizione: ' + ev.notes, 17, y);
           y += 5;
         }
-        doc.text('Priorita: ' + App.priorityLabel(ev.priority), 17, y);
+        doc.text('Priorità: ' + App.priorityLabel(ev.priority), 17, y);
         doc.text('Responsabile: ' + (ev.responsible || '-'), 80, y);
         doc.text('Scadenza: ' + (ev.deadline ? App.formatDate(ev.deadline) : '-'), 140, y);
         y += 5;
@@ -441,5 +453,6 @@ const PDFExport = {
     this._footer(doc);
     doc.save(`Registro-NC-${project.clientName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
     App.showToast('Registro NC generato', 'success');
+    } catch (err) { console.error('Errore Registro NC PDF:', err); App.showToast('Errore generazione PDF: ' + err.message, 'error'); }
   }
 };
