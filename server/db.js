@@ -89,14 +89,14 @@ for (const sql of migrations) {
 const adminExists = db.prepare("SELECT id FROM users WHERE role = 'admin'").get();
 if (!adminExists) {
   const bcrypt = require('bcryptjs');
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@trust-iso.local';
+  const adminEmail = (process.env.ADMIN_EMAIL || 'admin@trust-iso.local').toLowerCase().trim();
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
   const adminName = process.env.ADMIN_NAME || 'Amministratore';
   const hash = bcrypt.hashSync(adminPassword, 12);
   db.prepare(
     "INSERT INTO users (email, name, password_hash, role, is_approved, password_change_required) VALUES (?, ?, ?, 'admin', 1, 1)"
   ).run(adminEmail, adminName, hash);
-  console.log(`Utente admin creato: ${adminEmail} / ${adminPassword}`);
+  console.log(`Utente admin creato: ${adminEmail} (password da env: ${!!process.env.ADMIN_PASSWORD})`);
 }
 
 console.log(`Database SQLite inizializzato: ${DB_PATH}`);
