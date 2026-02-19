@@ -1,6 +1,6 @@
 {
   "name": "trust-iso-tracking-system",
-  "version": "2.0.0",
+  "version": "0.1.0-beta",
   "description": "Sistema di gestione certificazioni ISO per consulenti",
   "main": "server/index.js",
   "scripts": {

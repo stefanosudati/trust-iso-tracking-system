@@ -38,8 +38,11 @@ const AuthUI = {
             </div>
             <div>
               <label class="form-label">Password</label>
-              <input type="password" name="password" required autocomplete="current-password"
-                     class="form-input" placeholder="La tua password">
+              <div class="relative">
+                <input type="password" name="password" required autocomplete="current-password"
+                       class="form-input pr-10" placeholder="La tua password">
+                <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+              </div>
             </div>
             <div id="login-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
             <button type="submit" id="login-btn" class="btn-primary w-full justify-center">
@@ -64,8 +67,11 @@ const AuthUI = {
             </div>
             <div>
               <label class="form-label">Password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
-              <input type="password" name="password" required minlength="8" autocomplete="new-password"
-                     class="form-input" placeholder="Scegli una password sicura">
+              <div class="relative">
+                <input type="password" name="password" required minlength="8" autocomplete="new-password"
+                       class="form-input pr-10" placeholder="Scegli una password sicura">
+                <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+              </div>
             </div>
             <div id="register-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
             <button type="submit" id="register-btn" class="btn-primary w-full justify-center">
@@ -75,7 +81,7 @@ const AuthUI = {
         </div>
 
         <p class="text-center text-xs text-slate-400 mt-6">
-          Trust ISO Tracking System v2.0
+          Trust ISO Tracking System beta
         </p>
       </div>
     </div>`;
@@ -171,13 +177,19 @@ const AuthUI = {
       <form id="force-password-form" class="space-y-4">
         <div>
           <label class="form-label">Nuova password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
-          <input type="password" name="newPassword" required minlength="8" autocomplete="new-password"
-                 class="form-input" placeholder="Scegli una password sicura">
+          <div class="relative">
+            <input type="password" name="newPassword" required minlength="8" autocomplete="new-password"
+                   class="form-input pr-10" placeholder="Scegli una password sicura">
+            <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+          </div>
         </div>
         <div>
           <label class="form-label">Conferma password</label>
-          <input type="password" name="confirmPassword" required minlength="8"
-                 class="form-input" placeholder="Ripeti la password">
+          <div class="relative">
+            <input type="password" name="confirmPassword" required minlength="8"
+                   class="form-input pr-10" placeholder="Ripeti la password">
+            <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+          </div>
         </div>
         <div id="force-pw-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
         <button type="submit" id="force-pw-btn" class="btn-primary w-full justify-center">

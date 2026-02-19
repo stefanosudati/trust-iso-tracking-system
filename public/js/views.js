@@ -1770,15 +1770,24 @@ const Views = {
         <form id="change-password-form" class="space-y-4 max-w-sm">
           <div>
             <label class="form-label">Password attuale</label>
-            <input type="password" name="oldPassword" required class="form-input" placeholder="La tua password attuale">
+            <div class="relative">
+              <input type="password" name="oldPassword" required class="form-input pr-10" placeholder="La tua password attuale">
+              <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+            </div>
           </div>
           <div>
             <label class="form-label">Nuova password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
-            <input type="password" name="newPassword" required minlength="8" class="form-input" placeholder="Scegli una nuova password">
+            <div class="relative">
+              <input type="password" name="newPassword" required minlength="8" class="form-input pr-10" placeholder="Scegli una nuova password">
+              <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+            </div>
           </div>
           <div>
             <label class="form-label">Conferma nuova password</label>
-            <input type="password" name="confirmPassword" required class="form-input" placeholder="Ripeti la nuova password">
+            <div class="relative">
+              <input type="password" name="confirmPassword" required class="form-input pr-10" placeholder="Ripeti la nuova password">
+              <button type="button" class="pw-toggle" onclick="togglePw(this)"><i data-lucide="eye" class="w-4 h-4"></i></button>
+            </div>
           </div>
           <div id="password-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
           <div id="password-success" class="hidden text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg"></div>
@@ -1909,7 +1918,14 @@ const Views = {
                       <button data-approve="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors">
                         <i data-lucide="check" class="w-3.5 h-3.5 inline-block mr-1"></i>Approva
                       </button>` : ''}
-                    ${u.role !== 'admin' ? `
+                    ${u.id !== ApiClient.getUser()?.id ? (u.role !== 'admin' ? `
+                      <button data-promote="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors">
+                        <i data-lucide="shield" class="w-3.5 h-3.5 inline-block mr-1"></i>Promuovi Admin
+                      </button>` : `
+                      <button data-demote="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="shield-off" class="w-3.5 h-3.5 inline-block mr-1"></i>Retrocedi
+                      </button>`) : ''}
+                    ${u.id !== ApiClient.getUser()?.id && u.role !== 'admin' ? `
                       <button data-delete="${u.id}" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5 inline-block mr-1"></i>Elimina
                       </button>` : ''}
@@ -1932,6 +1948,40 @@ const Views = {
           await ApiClient.approveUser(userId);
           App.showToast('Utente approvato', 'success');
           // Refresh the view
+          const users = await ApiClient.getUsers();
+          document.getElementById('main-content').innerHTML = Views.adminUsers(users);
+          Views.bindAdminUsers();
+          if (window.lucide) lucide.createIcons();
+        } catch (err) {
+          App.showToast('Errore: ' + err.message, 'error');
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-promote]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const userId = btn.dataset.promote;
+        if (!confirm('Promuovere questo utente ad amministratore?')) return;
+        try {
+          await ApiClient.changeUserRole(userId, 'admin');
+          App.showToast('Utente promosso ad amministratore', 'success');
+          const users = await ApiClient.getUsers();
+          document.getElementById('main-content').innerHTML = Views.adminUsers(users);
+          Views.bindAdminUsers();
+          if (window.lucide) lucide.createIcons();
+        } catch (err) {
+          App.showToast('Errore: ' + err.message, 'error');
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-demote]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const userId = btn.dataset.demote;
+        if (!confirm('Retrocedere questo utente a utente standard?')) return;
+        try {
+          await ApiClient.changeUserRole(userId, 'user');
+          App.showToast('Utente retrocesso a utente standard', 'success');
           const users = await ApiClient.getUsers();
           document.getElementById('main-content').innerHTML = Views.adminUsers(users);
           Views.bindAdminUsers();

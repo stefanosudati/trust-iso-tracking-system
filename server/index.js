@@ -37,7 +37,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n  Trust ISO Tracking System v2.0`);
+  console.log(`\n  Trust ISO Tracking System beta`);
   console.log(`  Server in ascolto su http://localhost:${PORT}`);
   console.log(`  Health check: http://localhost:${PORT}/health\n`);
 });

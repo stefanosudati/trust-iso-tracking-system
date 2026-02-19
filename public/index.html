@@ -195,7 +195,33 @@
       #sidebar, #header, #toast-container { display: none !important; }
       #main-content { margin-left: 0 !important; }
     }
+    /* Password toggle button */
+    .pw-toggle {
+      position: absolute;
+      right: 0.625rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94a3b8;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+    }
+    .pw-toggle:hover { color: #475569; }
   </style>
+
+  <script>
+    function togglePw(btn) {
+      var input = btn.parentElement.querySelector('input');
+      var isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      var icon = btn.querySelector('i');
+      if (icon) icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+      if (window.lucide) lucide.createIcons();
+    }
+  </script>
 
   <!-- Anti-FOUC: apply saved theme before body renders -->
   <script>

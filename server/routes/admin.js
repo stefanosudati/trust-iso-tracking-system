@@ -36,6 +36,28 @@ router.put('/users/:id/approve', (req, res) => {
   res.json({ message: 'Utente approvato con successo' });
 });
 
+// PUT /api/admin/users/:id/role — Change user role
+router.put('/users/:id/role', (req, res) => {
+  const userId = parseInt(req.params.id);
+  const { role } = req.body;
+
+  if (!role || !['admin', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Ruolo non valido. Usa "admin" o "user"' });
+  }
+
+  if (userId === req.userId) {
+    return res.status(400).json({ error: 'Non puoi modificare il tuo stesso ruolo' });
+  }
+
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'Utente non trovato' });
+  }
+
+  db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, userId);
+  res.json({ message: role === 'admin' ? 'Utente promosso ad amministratore' : 'Utente retrocesso a utente standard' });
+});
+
 // DELETE /api/admin/users/:id — Delete user
 router.delete('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id);

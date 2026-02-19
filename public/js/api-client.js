@@ -376,6 +376,13 @@ const ApiClient = {
     });
   },
 
+  async changeUserRole(userId, role) {
+    return await this._fetch('/admin/users/' + userId + '/role', {
+      method: 'PUT',
+      body: JSON.stringify({ role })
+    });
+  },
+
   // ─── Stub for backward compatibility ──────────────────────
   init() {
     // No-op: replaced by async App.init() flow
