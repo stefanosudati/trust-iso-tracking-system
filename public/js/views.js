@@ -8,6 +8,10 @@ const Views = {
   dashboard: (project) => DashboardView.dashboard(project),
   bindDashboard: () => DashboardView.bindDashboard(),
 
+  // Clients
+  clientsList: () => ClientsView.clientsList(),
+  bindClientsList: () => ClientsView.bindClientsList(),
+
   // Projects
   projectList: () => ProjectsView.projectList(),
   bindProjectList: () => ProjectsView.bindProjectList(),

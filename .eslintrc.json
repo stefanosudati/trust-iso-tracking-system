@@ -44,6 +44,7 @@
         "ReportsView": "readonly",
         "SettingsView": "readonly",
         "AdminView": "readonly",
+        "ClientsView": "readonly",
         "DEFAULT_EVALUATION": "readonly",
         "MANDATORY_DOCS": "readonly",
         "TOAST_DURATION": "readonly",

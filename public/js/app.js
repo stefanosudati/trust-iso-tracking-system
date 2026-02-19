@@ -105,6 +105,9 @@ const App = {
     // Panoramica (always goes to overview, clears active project)
     html += this.sidebarItem('overview', 'Panoramica', 'home', !project && this.currentView === 'dashboard');
 
+    // Clients
+    html += this.sidebarItem('clients', 'Clienti', 'building-2');
+
     // Projects
     html += this.sidebarItem('projects', 'Progetti', 'folder');
 
@@ -208,6 +211,10 @@ const App = {
       case 'dashboard':
         main.innerHTML = Views.dashboard(project);
         Views.bindDashboard();
+        break;
+      case 'clients':
+        main.innerHTML = Views.clientsList();
+        Views.bindClientsList();
         break;
       case 'projects':
         main.innerHTML = Views.projectList();
