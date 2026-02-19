@@ -2,7 +2,7 @@
 <html lang="it" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Trust ISO Tracking System</title>
   <meta name="description" content="Sistema di gestione certificazioni ISO per consulenti">
 
@@ -42,16 +42,6 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <!-- jsPDF for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-  <script>
-    if (!window.jspdf) {
-      console.warn('jsPDF CDN primario non disponibile, tentativo CDN alternativo...');
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js';
-      document.head.appendChild(s);
-    }
-  </script>
 
   <style>
     /* ─── Theme CSS Variables (defaults = Blue) ─── */
@@ -190,6 +180,145 @@
     /* Themed checkbox accent */
     .themed-checkbox { accent-color: var(--primary); }
 
+    /* ─── Mobile / iPhone fixes ─── */
+
+    /* Prevent iOS zoom on input focus: inputs must be >= 16px */
+    @media screen and (max-width: 767px) {
+      .form-input,
+      input.form-input,
+      select.form-input,
+      textarea.form-input,
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="tel"],
+      input[type="date"],
+      input[type="number"],
+      input[type="search"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    /* Safe area insets for notched iPhones */
+    #header {
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      padding-top: env(safe-area-inset-top);
+    }
+
+    #sidebar {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    #main-content {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    #toast-container {
+      right: max(1rem, env(safe-area-inset-right));
+    }
+
+    /* Minimum touch target sizes (44x44px) for mobile */
+    @media screen and (max-width: 767px) {
+      .btn-primary,
+      .btn-secondary,
+      .btn-danger {
+        min-height: 44px;
+        padding: 0.625rem 1rem;
+      }
+
+      /* Icon-only buttons in header */
+      #header button[class*="p-1"],
+      #header button[class*="p-1.5"] {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Sidebar nav items */
+      .sidebar-link {
+        min-height: 44px;
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+      }
+
+      /* Password toggle buttons */
+      .pw-toggle {
+        min-width: 44px;
+        min-height: 44px;
+      }
+    }
+
+    /* iOS Safari: smooth momentum scrolling */
+    #sidebar,
+    #main-content,
+    .overflow-y-auto,
+    .overflow-x-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Prevent content shift when iOS Safari address bar shows/hides */
+    @supports (height: 100dvh) {
+      html, body, .h-full {
+        height: 100dvh;
+      }
+    }
+
+    /* Mobile: sidebar adjustments */
+    @media screen and (max-width: 1023px) {
+      /* Ensure sidebar fills height properly below header,
+         accounting for safe-area-inset-top on the header */
+      #sidebar {
+        top: 0;
+        height: 100%;
+        padding-top: calc(5rem + env(safe-area-inset-top));
+      }
+
+      /* When sidebar opens, prevent body scrolling */
+      body.sidebar-open {
+        overflow: hidden;
+      }
+    }
+
+    /* Horizontal scroll hint for tables on mobile */
+    @media screen and (max-width: 767px) {
+      .overflow-x-auto {
+        position: relative;
+      }
+      .overflow-x-auto::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 24px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.8));
+        pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+      .overflow-x-auto:not([data-scrolled="false"])::after {
+        opacity: 0;
+      }
+
+      /* Tables: prevent cell content wrapping making cells too wide */
+      table th, table td {
+        white-space: nowrap;
+      }
+    }
+
+    /* Modal: safe area padding on mobile */
+    @media screen and (max-width: 767px) {
+      #modal > .relative {
+        max-height: calc(90vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        margin: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+      }
+    }
+
     /* Print styles */
     @media print {
       #sidebar, #header, #toast-container { display: none !important; }
@@ -240,27 +369,27 @@
   <div class="h-full flex flex-col">
 
     <!-- Header -->
-    <header id="header" class="px-4 h-20 flex items-center justify-between flex-shrink-0 z-30" style="background-color: var(--header-bg); border-bottom: 1px solid var(--header-border);">
-      <div class="flex items-center gap-3">
+    <header id="header" class="px-4 h-20 flex items-center justify-between flex-shrink-0 z-30 relative" style="background-color: var(--header-bg); border-bottom: 1px solid var(--header-border);">
+      <div class="flex items-center gap-3 min-w-0">
         <!-- Mobile menu toggle -->
         <button id="toggle-sidebar" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-600">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <!-- Logo -->
-        <div class="flex items-center gap-2">
+        <!-- Logo (clickable → go to overview) -->
+        <div class="flex items-center gap-2 cursor-pointer" title="Torna alla panoramica">
           <img src="/img/logo.png" alt="Trust ISO" class="w-16 h-16 object-contain">
           <span class="font-bold hidden sm:block" style="color: var(--app-title);">Trust ISO Tracking System</span>
         </div>
 
-        <!-- Active project info -->
-        <div id="header-project-info" class="hidden items-center gap-2 ml-4 pl-4 border-l border-slate-200">
-          <span id="header-project-name" class="text-sm font-medium text-slate-700"></span>
-          <span id="header-phase" class="text-xs px-2 py-0.5 rounded-full"></span>
+        <!-- Active project info (hidden on very small screens to prevent overflow) -->
+        <div id="header-project-info" class="hidden items-center gap-2 ml-4 pl-4 border-l border-slate-200 max-sm:!hidden">
+          <span id="header-project-name" class="text-sm font-medium text-slate-700 truncate max-w-[120px] sm:max-w-[200px]"></span>
+          <span id="header-phase" class="text-xs px-2 py-0.5 rounded-full whitespace-nowrap"></span>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-shrink-0">
         <!-- Search -->
         <div class="relative hidden md:block">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
@@ -294,11 +423,11 @@
     <div class="flex-1 flex overflow-hidden relative">
 
       <!-- Sidebar overlay (mobile) -->
-      <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+      <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-[35] lg:hidden"></div>
 
       <!-- Sidebar -->
       <aside id="sidebar" class="w-64 flex-shrink-0 overflow-y-auto z-40
-                                  fixed lg:static inset-y-20 left-0 -translate-x-full lg:translate-x-0"
+                                  fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0"
              style="background-color: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border);">
         <div class="p-3 space-y-1">
           <nav id="sidebar-nav">
@@ -329,13 +458,40 @@
     </div>
   </div>
 
-  <!-- Scripts (order matters: iso data -> api client -> themes -> auth -> views -> pdf -> app) -->
+  <!-- Scripts (order matters: data -> core -> view modules -> facade -> export -> app) -->
   <script src="data/iso9001.js"></script>
+
+  <!-- Shared constants -->
+  <script src="js/constants.js"></script>
+
+  <!-- Core -->
   <script src="js/api-client.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/auth.js"></script>
+
+  <!-- View modules -->
+  <script src="js/views/dashboard-view.js"></script>
+  <script src="js/views/projects-view.js"></script>
+  <script src="js/views/project-detail-view.js"></script>
+  <script src="js/views/clause-view.js"></script>
+  <script src="js/views/requirement-view.js"></script>
+  <script src="js/views/documents-view.js"></script>
+  <script src="js/views/timeline-view.js"></script>
+  <script src="js/views/reports-view.js"></script>
+  <script src="js/views/settings-view.js"></script>
+  <script src="js/views/clients-view.js"></script>
+  <script src="js/views/admin-view.js"></script>
+
+  <!-- Views facade (backward compat) -->
   <script src="js/views.js"></script>
-  <script src="js/pdf-export.js"></script>
+
+  <!-- Markdown export -->
+  <script src="js/md-export.js"></script>
+
+  <!-- Tutorial (first-login onboarding) -->
+  <script src="js/tutorial.js"></script>
+
+  <!-- Main app -->
   <script src="js/app.js"></script>
 </body>
 </html>

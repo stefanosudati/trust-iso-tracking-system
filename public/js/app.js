@@ -5,7 +5,7 @@ const App = {
   currentView: 'dashboard',
   currentClause: null,
   currentRequirement: null,
-  sidebarOpen: true,
+  sidebarOpen: window.innerWidth >= 1024,
 
   async init() {
     // Apply saved theme immediately (before any rendering)
@@ -17,17 +17,18 @@ const App = {
       return;
     }
 
-    try {
-      // Load all projects from server into cache
-      await ApiClient.loadProjects();
+    // Load projects and clients independently (one failure shouldn't block the other)
+    try { await ApiClient.loadProjects(); } catch (err) { console.error('Errore caricamento progetti:', err); }
+    try { await ApiClient.loadClients(); } catch (err) { console.error('Errore caricamento clienti:', err); }
 
+    try {
       // Restore active project
       const savedId = ApiClient.getActiveProjectId();
       if (savedId) {
         await ApiClient.setActiveProject(savedId);
       }
     } catch (err) {
-      console.error('Errore caricamento dati:', err);
+      console.error('Errore ripristino progetto attivo:', err);
     }
 
     // Show user info in header + sync theme from server
@@ -42,13 +43,30 @@ const App = {
 
     this.bindGlobalEvents();
     this.render();
-    this.autoSaveInterval = setInterval(() => this.autoSaveIndicator(), 30000);
+    this.autoSaveInterval = setInterval(() => this.autoSaveIndicator(), AUTOSAVE_INTERVAL);
+
+    // Show first-login tutorial if user hasn't seen it yet
+    if (user && user.hasSeenTutorial === false && typeof Tutorial !== 'undefined') {
+      setTimeout(() => Tutorial.start(), 500);
+    }
+  },
+
+  // Close sidebar on mobile after navigating
+  closeMobileSidebar() {
+    if (window.innerWidth < 1024) {
+      this.sidebarOpen = false;
+      document.getElementById('sidebar')?.classList.add('-translate-x-full');
+      document.getElementById('sidebar')?.classList.remove('translate-x-0');
+      document.getElementById('sidebar-overlay')?.classList.add('hidden');
+      document.body.classList.remove('sidebar-open');
+    }
   },
 
   // --- Navigation ---
   navigate(view, params = {}) {
     this.currentView = view;
     Object.assign(this, params);
+    this.closeMobileSidebar();
     this.render();
     // Scroll to top
     document.getElementById('main-content')?.scrollTo(0, 0);
@@ -84,8 +102,11 @@ const App = {
     // Build navigation items
     let html = '';
 
-    // Dashboard
-    html += this.sidebarItem('dashboard', 'Dashboard', 'home', !project);
+    // Panoramica (always goes to overview, clears active project)
+    html += this.sidebarItem('overview', 'Panoramica', 'home', !project && this.currentView === 'dashboard');
+
+    // Clients
+    html += this.sidebarItem('clients', 'Clienti', 'building-2');
 
     // Projects
     html += this.sidebarItem('projects', 'Progetti', 'folder');
@@ -93,6 +114,8 @@ const App = {
     if (project) {
       const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
       if (cert && cert.clauses.length) {
+        // Project dashboard (stats overview)
+        html += this.sidebarItem('dashboard', 'Dashboard Progetto', 'bar-chart');
         // Project info
         html += this.sidebarItem('project-detail', 'Dati Progetto', 'clipboard');
 
@@ -144,11 +167,17 @@ const App = {
 
     // Bind sidebar navigation
     nav.querySelectorAll('[data-view]').forEach(el => {
-      el.addEventListener('click', (e) => {
+      el.addEventListener('click', async (e) => {
         e.preventDefault();
         const view = el.dataset.view;
         const params = {};
         if (el.dataset.clause) params.currentClause = el.dataset.clause;
+        // "Panoramica" clears active project and shows overview
+        if (view === 'overview') {
+          await Store.setActiveProject(null);
+          this.navigate('dashboard');
+          return;
+        }
         this.navigate(view, params);
       });
     });
@@ -182,6 +211,10 @@ const App = {
       case 'dashboard':
         main.innerHTML = Views.dashboard(project);
         Views.bindDashboard();
+        break;
+      case 'clients':
+        main.innerHTML = Views.clientsList();
+        Views.bindClientsList();
         break;
       case 'projects':
         main.innerHTML = Views.projectList();
@@ -253,13 +286,18 @@ const App = {
       sidebar.classList.toggle('-translate-x-full', !this.sidebarOpen);
       sidebar.classList.toggle('translate-x-0', this.sidebarOpen);
       overlay.classList.toggle('hidden', !this.sidebarOpen);
+      document.body.classList.toggle('sidebar-open', this.sidebarOpen && window.innerWidth < 1024);
     });
 
     // Mobile sidebar overlay
     document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
-      this.sidebarOpen = false;
-      document.getElementById('sidebar').classList.add('-translate-x-full');
-      document.getElementById('sidebar-overlay').classList.add('hidden');
+      this.closeMobileSidebar();
+    });
+
+    // Header logo click → go to overview
+    document.querySelector('#header .flex.items-center.gap-2')?.addEventListener('click', async () => {
+      await Store.setActiveProject(null);
+      this.navigate('dashboard');
     });
 
     // Quick search
@@ -462,8 +500,8 @@ const App = {
     requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
     setTimeout(() => {
       toast.classList.add('translate-x-full');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+      setTimeout(() => toast.remove(), TOAST_FADE_MS);
+    }, TOAST_DURATION);
   },
 
   autoSaveIndicator() {
