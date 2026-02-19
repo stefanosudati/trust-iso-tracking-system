@@ -38,6 +38,7 @@ router.post('/register', (req, res) => {
     const isFirstUser = userCount === 0;
     const role = isFirstUser ? 'admin' : 'user';
     const isApproved = isFirstUser ? 1 : 0;
+    console.log(`Registrazione: ${email} — utenti esistenti: ${userCount}, ruolo assegnato: ${role}`);
 
     const hash = bcrypt.hashSync(password, 12);
     const stmt = db.prepare('INSERT INTO users (email, name, password_hash, role, is_approved, password_change_required) VALUES (?, ?, ?, ?, ?, ?)');
