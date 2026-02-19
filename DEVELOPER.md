@@ -337,7 +337,6 @@ Apri il file `.env` e configura le variabili:
 | `SMTP_USER` | No | Username per autenticazione SMTP | Nessuno |
 | `SMTP_PASS` | No | Password per autenticazione SMTP | Nessuno |
 | `SMTP_FROM` | No | Indirizzo email mittente | Uguale a `SMTP_USER` |
-| `ADMIN_EMAIL` | No | Email destinatario riepilogo changelog | Nessuno |
 | `CHANGELOG_EMAIL_INTERVAL` | No | Frequenza email changelog: `daily` o `weekly` | `daily` |
 
 Esempio minimo di file `.env`:

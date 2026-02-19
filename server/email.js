@@ -28,7 +28,7 @@ if (isConfigured) {
   console.log(`Email SMTP configurato: ${SMTP_HOST}:${SMTP_PORT}`);
 } else {
   console.warn(
-    'SMTP non configurato (SMTP_HOST, SMTP_USER, SMTP_PASS mancanti). Le email non verranno inviate.'
+    'SMTP non configurato (SMTP_HOST, SMTP_USER, SMTP_PASS mancanti). Le email non verranno inviate. Nota: SMTP_PASS richiede una Password per le app (16 caratteri), non la password dell\'account.'
   );
 }
 

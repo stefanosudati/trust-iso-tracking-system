@@ -898,10 +898,10 @@ Quando un utente si registra autonomamente (dopo il primo utente), il suo accoun
 Se il server e configurato con un servizio SMTP per l'invio di email, l'amministratore puo inviare un riepilogo delle modifiche recenti (changelog) via email.
 
 1. Clicca il pulsante **Invia riepilogo changelog** (ambra con icona busta) in alto a destra.
-2. Il sistema compila e invia un'email con il riepilogo delle modifiche recenti all'indirizzo email configurato come `ADMIN_EMAIL`.
+2. Il sistema compila e invia un'email con il riepilogo delle modifiche recenti a tutti gli utenti con ruolo **amministratore**.
 3. Comparira un messaggio di conferma o di errore a seconda dell'esito dell'invio.
 
-> **Nota:** Questa funzione richiede la configurazione delle variabili d'ambiente SMTP sul server (SMTP_HOST, SMTP_USER, SMTP_PASS, SMTP_FROM, ADMIN_EMAIL). Se non configurata, l'invio fallira silenziosamente.
+> **Nota:** Questa funzione richiede la configurazione delle variabili d'ambiente SMTP sul server (SMTP_HOST, SMTP_USER, SMTP_PASS). Se non configurata, l'invio fallira silenziosamente. I destinatari sono determinati automaticamente: ricevono l'email tutti gli utenti con ruolo admin registrati nell'applicazione.
 
 ---
 

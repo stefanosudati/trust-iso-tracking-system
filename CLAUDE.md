@@ -93,11 +93,12 @@ Key tables:
 | `JWT_SECRET` | JWT signing key | — | Yes |
 | `PORT` | Server port | `3002` | No |
 | `DB_PATH` | SQLite file path (`:memory:` for tests) | `/data/db.sqlite` | No |
-| `SMTP_HOST` | SMTP server host | — | No |
-| `SMTP_USER` | SMTP username | — | No |
-| `SMTP_PASS` | SMTP password | — | No |
-| `SMTP_FROM` | Sender email address | — | No |
-| `ADMIN_EMAIL` | Changelog summary recipient | — | No |
+| `SMTP_HOST` | SMTP server host (e.g. `smtp.gmail.com`) | — | No |
+| `SMTP_PORT` | SMTP server port | `587` | No |
+| `SMTP_USER` | Email address (e.g. `name@gmail.com`) | — | No |
+| `SMTP_PASS` | **App Password** (16 chars, NOT account password). See `.env.example` for generation instructions | — | No |
+| `SMTP_FROM` | Sender email address | `SMTP_USER` | No |
+| `CHANGELOG_EMAIL_INTERVAL` | Changelog email frequency (`daily`/`weekly`) | `daily` | No |
 
 **IMPORTANT (Docker/Coolify):** `DB_PATH` must be absolute `/data/db.sqlite`, NOT relative `./data/db.sqlite`. The Docker volume is mounted at `/data`.
 

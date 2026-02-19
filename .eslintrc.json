@@ -56,7 +56,8 @@
         "countRequirements": "readonly",
         "lucide": "readonly",
         "togglePw": "readonly",
-        "Tutorial": "readonly"
+        "Tutorial": "readonly",
+        "ReportExport": "readonly"
       }
     }
   ]

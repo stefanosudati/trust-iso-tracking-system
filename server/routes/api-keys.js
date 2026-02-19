@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const crypto = require('crypto');
 const db = require('../db');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 
-// All api-key routes require authentication
-router.use(requireAuth);
+// All api-key routes require authentication + admin role
+router.use(requireAuth, requireAdmin);
 
 /**
  * Hash an API key with SHA-256 for storage/lookup.

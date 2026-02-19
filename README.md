@@ -131,10 +131,11 @@ docker compose up -d
 | `PORT` | Porta del server | `3002` | No |
 | `DB_PATH` | Percorso database SQLite | `/data/db.sqlite` | No |
 | `SMTP_HOST` | Host server SMTP | — | No |
+| `SMTP_PORT` | Porta server SMTP | `587` | No |
 | `SMTP_USER` | Username SMTP | — | No |
 | `SMTP_PASS` | Password SMTP | — | No |
-| `SMTP_FROM` | Indirizzo mittente email | — | No |
-| `ADMIN_EMAIL` | Email destinatario riepilogo | — | No |
+| `SMTP_FROM` | Indirizzo mittente email | `SMTP_USER` | No |
+| `CHANGELOG_EMAIL_INTERVAL` | Frequenza riepilogo changelog (`daily`/`weekly`) | `daily` | No |
 
 > **IMPORTANTE (Coolify/Docker):** `DB_PATH` deve essere un path assoluto `/data/db.sqlite`, NON relativo `./data/db.sqlite`. Il volume Docker e montato su `/data`.
 
