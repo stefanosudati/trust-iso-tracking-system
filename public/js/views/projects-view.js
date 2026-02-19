@@ -323,9 +323,11 @@ const ProjectsView = {
 
       try {
         if (selectedClientId) {
-          // Existing client selected - send clientId, remove inline client fields
+          // Existing client selected - send clientId, populate clientName from client record
           data.clientId = parseInt(selectedClientId);
-          delete data.clientName;
+          const linkedClient = Store.getClient(data.clientId);
+          data.clientName = linkedClient ? linkedClient.companyName : '';
+
           delete data.sector;
           delete data.ateco;
           delete data.employees;
