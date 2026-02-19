@@ -29,13 +29,24 @@ const ProjectsView = {
         </button>
       </div>
       ` : `
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Search bar -->
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input type="text" id="projects-search" placeholder="Cerca progetto per cliente, settore, fase..."
+               class="form-input pl-9 pr-3" />
+      </div>
+
+      <!-- Results counter -->
+      <div id="projects-counter" class="text-sm text-slate-500"></div>
+
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         ${projects.map(p => {
           const stats = Store.getProjectStats(p.id);
           const cert = CERTIFICATIONS.find(c => c.id === p.certificationId);
           const isActive = Store.getActiveProjectId() === p.id;
+          const searchText = [p.clientName, p.sector, App.phaseLabel(p.phase), cert?.name].filter(Boolean).join(' ').toLowerCase();
           return `
-          <div class="bg-white rounded-xl border ${isActive ? '' : 'border-slate-200'} p-5 hover:shadow-md transition-all project-card" data-project-id="${p.id}"
+          <div class="bg-white rounded-xl border ${isActive ? '' : 'border-slate-200'} p-5 hover:shadow-md transition-all project-card" data-project-id="${p.id}" data-search-text="${searchText}"
                ${isActive ? `style="border-color: var(--primary-light); box-shadow: 0 0 0 2px var(--focus-ring);"` : ''}>
             <div class="flex items-start justify-between mb-3">
               <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color:${cert?.color || '#2563eb'}15">
@@ -63,11 +74,60 @@ const ProjectsView = {
           </div>`;
         }).join('')}
       </div>
+      <div id="projects-empty-search" class="hidden bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-slate-100">
+          <i data-lucide="search-x" class="w-8 h-8 text-slate-400"></i>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-2">Nessun progetto trovato</h3>
+        <p class="text-slate-500">Prova con un termine di ricerca diverso</p>
+      </div>
       `}
     </div>`;
   },
 
   bindProjectList() {
+    // Search filter
+    const searchInput = document.getElementById('projects-search');
+    const grid = document.getElementById('projects-grid');
+    const counter = document.getElementById('projects-counter');
+    const emptySearch = document.getElementById('projects-empty-search');
+    const allCards = grid ? Array.from(grid.querySelectorAll('.project-card')) : [];
+    const totalCount = allCards.length;
+
+    if (counter && totalCount > 0) {
+      counter.textContent = `${totalCount} di ${totalCount} progetti`;
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('keyup', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        for (const card of allCards) {
+          const text = card.dataset.searchText || '';
+          const match = !query || text.includes(query);
+          card.style.display = match ? '' : 'none';
+          if (match) visibleCount++;
+        }
+
+        if (counter) {
+          counter.textContent = query
+            ? `${visibleCount} di ${totalCount} progetti`
+            : `${totalCount} di ${totalCount} progetti`;
+        }
+
+        if (emptySearch && grid) {
+          if (visibleCount === 0 && query) {
+            grid.classList.add('hidden');
+            emptySearch.classList.remove('hidden');
+          } else {
+            grid.classList.remove('hidden');
+            emptySearch.classList.add('hidden');
+          }
+        }
+      });
+    }
+
     document.querySelectorAll('.project-card').forEach(el => {
       el.addEventListener('click', async (e) => {
         if (e.target.closest('.project-menu')) return;

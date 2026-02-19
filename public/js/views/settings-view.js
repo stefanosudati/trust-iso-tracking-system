@@ -59,6 +59,7 @@ const SettingsView = {
         </form>
       </div>
 
+      ${ApiClient.getUser()?.role === 'admin' ? `
       <!-- API Keys -->
       <div class="bg-white rounded-xl border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-4">
@@ -117,6 +118,7 @@ const SettingsView = {
           </div>
         </div>
       </div>
+      ` : ''}
 
       <!-- Guide e Documentazione -->
       <div class="bg-white rounded-xl border border-slate-200 p-5">
@@ -342,90 +344,92 @@ const SettingsView = {
       if (window.lucide) lucide.createIcons();
     });
 
-    // API Keys: Show/hide form
-    const btnNewKey = document.getElementById('btn-new-api-key');
-    const formContainer = document.getElementById('api-key-form-container');
-    const btnCancel = document.getElementById('btn-cancel-api-key');
+    // API Keys: only bind if admin
+    if (ApiClient.getUser()?.role === 'admin') {
+      const btnNewKey = document.getElementById('btn-new-api-key');
+      const formContainer = document.getElementById('api-key-form-container');
+      const btnCancel = document.getElementById('btn-cancel-api-key');
 
-    btnNewKey?.addEventListener('click', () => {
-      formContainer?.classList.remove('hidden');
-      document.getElementById('api-key-generated')?.classList.add('hidden');
-      btnNewKey.classList.add('hidden');
-    });
+      btnNewKey?.addEventListener('click', () => {
+        formContainer?.classList.remove('hidden');
+        document.getElementById('api-key-generated')?.classList.add('hidden');
+        btnNewKey.classList.add('hidden');
+      });
 
-    btnCancel?.addEventListener('click', () => {
-      formContainer?.classList.add('hidden');
-      btnNewKey?.classList.remove('hidden');
-    });
-
-    // API Keys: Create form submission
-    document.getElementById('create-api-key-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fd = new FormData(e.target);
-      const name = fd.get('keyName')?.trim() || 'API Key';
-      const expiresStr = fd.get('expiresInDays')?.trim();
-      const expiresInDays = expiresStr ? parseInt(expiresStr, 10) : null;
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Generazione...';
-
-      try {
-        const result = await ApiClient.createApiKey(name, expiresInDays);
-
-        // Show the generated key
-        const generatedEl = document.getElementById('api-key-generated');
-        const keyValueEl = document.getElementById('api-key-value');
-        if (generatedEl && keyValueEl) {
-          keyValueEl.textContent = result.rawKey;
-          generatedEl.classList.remove('hidden');
-        }
-
-        // Hide the form
+      btnCancel?.addEventListener('click', () => {
         formContainer?.classList.add('hidden');
         btnNewKey?.classList.remove('hidden');
-        e.target.reset();
+      });
 
-        // Reload list
-        await this._loadAndRenderApiKeys();
+      // API Keys: Create form submission
+      document.getElementById('create-api-key-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const name = fd.get('keyName')?.trim() || 'API Key';
+        const expiresStr = fd.get('expiresInDays')?.trim();
+        const expiresInDays = expiresStr ? parseInt(expiresStr, 10) : null;
 
-        if (typeof App !== 'undefined' && App.showToast) {
-          App.showToast('Chiave API generata con successo', 'success');
-        }
-      } catch (err) {
-        if (typeof App !== 'undefined' && App.showToast) {
-          App.showToast(err.message, 'error');
-        }
-      }
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Generazione...';
 
-      btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="key" class="w-4 h-4"></i> Genera';
-      if (window.lucide) lucide.createIcons();
-    });
+        try {
+          const result = await ApiClient.createApiKey(name, expiresInDays);
 
-    // API Keys: Copy button
-    document.getElementById('btn-copy-api-key')?.addEventListener('click', () => {
-      const keyValue = document.getElementById('api-key-value')?.textContent;
-      if (keyValue) {
-        navigator.clipboard.writeText(keyValue).then(() => {
+          // Show the generated key
+          const generatedEl = document.getElementById('api-key-generated');
+          const keyValueEl = document.getElementById('api-key-value');
+          if (generatedEl && keyValueEl) {
+            keyValueEl.textContent = result.rawKey;
+            generatedEl.classList.remove('hidden');
+          }
+
+          // Hide the form
+          formContainer?.classList.add('hidden');
+          btnNewKey?.classList.remove('hidden');
+          e.target.reset();
+
+          // Reload list
+          await this._loadAndRenderApiKeys();
+
           if (typeof App !== 'undefined' && App.showToast) {
-            App.showToast('Chiave copiata negli appunti', 'success');
+            App.showToast('Chiave API generata con successo', 'success');
           }
-        }).catch(() => {
-          // Fallback: select text
-          const el = document.getElementById('api-key-value');
-          if (el) {
-            const range = document.createRange();
-            range.selectNodeContents(el);
-            window.getSelection()?.removeAllRanges();
-            window.getSelection()?.addRange(range);
+        } catch (err) {
+          if (typeof App !== 'undefined' && App.showToast) {
+            App.showToast(err.message, 'error');
           }
-        });
-      }
-    });
+        }
 
-    // Load API keys list
-    this._loadAndRenderApiKeys();
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="key" class="w-4 h-4"></i> Genera';
+        if (window.lucide) lucide.createIcons();
+      });
+
+      // API Keys: Copy button
+      document.getElementById('btn-copy-api-key')?.addEventListener('click', () => {
+        const keyValue = document.getElementById('api-key-value')?.textContent;
+        if (keyValue) {
+          navigator.clipboard.writeText(keyValue).then(() => {
+            if (typeof App !== 'undefined' && App.showToast) {
+              App.showToast('Chiave copiata negli appunti', 'success');
+            }
+          }).catch(() => {
+            // Fallback: select text
+            const el = document.getElementById('api-key-value');
+            if (el) {
+              const range = document.createRange();
+              range.selectNodeContents(el);
+              window.getSelection()?.removeAllRanges();
+              window.getSelection()?.addRange(range);
+            }
+          });
+        }
+      });
+
+      // Load API keys list
+      this._loadAndRenderApiKeys();
+    }
 
     // Guide Markdown buttons
     document.getElementById('btn-user-guide')?.addEventListener('click', () => GuideExport.userGuide());
