@@ -157,11 +157,45 @@ Le variabili d'ambiente sono parametri di configurazione che l'applicazione legg
 1. Nella pagina della risorsa appena creata, vai nella tab **Environment Variables**
 2. Aggiungi le seguenti variabili:
 
-| Chiave | Valore | Obbligatoria | Spiegazione |
-|--------|--------|:------------:|-------------|
-| `JWT_SECRET` | *(stringa casuale di almeno 48 caratteri)* | Si | Chiave segreta per firmare i token di autenticazione (JWT). Ogni utente che effettua il login riceve un token firmato con questa chiave. Se cambi il secret, tutti gli utenti dovranno rifare il login. |
-| `PORT` | `3002` | Si | La porta di rete su cui l'applicazione ascolta all'interno del container. Il valore `3002` e quello predefinito del progetto. |
-| `DB_PATH` | `/data/db.sqlite` | Si | Il percorso completo dove l'applicazione salvera il file del database SQLite. Deve essere un percorso assoluto che inizia con `/data/` perche il volume persistente e montato in quella directory. |
+#### Variabili obbligatorie
+
+| Chiave | Valore | Spiegazione |
+|--------|--------|-------------|
+| `JWT_SECRET` | *(stringa casuale di almeno 48 caratteri)* | Chiave segreta per firmare i token di autenticazione (JWT). Ogni utente che effettua il login riceve un token firmato con questa chiave. Se cambi il secret, tutti gli utenti dovranno rifare il login. |
+
+> **Nota:** `PORT` e `DB_PATH` sono gia impostati nel Dockerfile con i valori corretti (`PORT=3002`, `DB_PATH=/data/db.sqlite`). Non serve configurarli in Coolify a meno che tu non voglia sovrascriverli. Anche `NODE_ENV=production` e gia impostato nel Dockerfile.
+
+#### Variabili opzionali — Notifiche email
+
+Queste variabili attivano le notifiche email automatiche. L'applicazione invia un riepilogo periodico delle modifiche (changelog) a tutti gli utenti con ruolo amministratore. Se queste variabili non vengono configurate, l'applicazione funziona normalmente ma le email non vengono inviate.
+
+| Chiave | Valore | Default | Spiegazione |
+|--------|--------|---------|-------------|
+| `SMTP_HOST` | *(indirizzo del server SMTP)* | — | Il server di posta in uscita. Esempio: `smtp.gmail.com`, `smtp.office365.com`, `in-v3.mailjet.com` |
+| `SMTP_PORT` | `587` | `587` | La porta del server SMTP. Usa `587` per STARTTLS (consigliato) o `465` per SSL diretto |
+| `SMTP_USER` | *(username SMTP)* | — | Il nome utente per l'autenticazione SMTP. Solitamente e un indirizzo email |
+| `SMTP_PASS` | *(password SMTP)* | — | La password per l'autenticazione SMTP. Per Gmail, usa una "App Password", non la password dell'account |
+| `SMTP_FROM` | *(indirizzo mittente)* | Uguale a `SMTP_USER` | L'indirizzo email che appare come mittente. Se non specificato, viene usato `SMTP_USER` |
+| `CHANGELOG_EMAIL_INTERVAL` | `daily` oppure `weekly` | `daily` | Frequenza di invio del riepilogo changelog. `daily` = ogni 24 ore, `weekly` = ogni 7 giorni |
+
+Per attivare le email, e necessario configurare almeno `SMTP_HOST`, `SMTP_USER` e `SMTP_PASS`. Se anche solo una di queste tre manca, lo scheduler non si avvia e nei log vedrai il messaggio: *"SMTP non configurato, scheduler non avviato"*.
+
+I destinatari delle email di riepilogo sono tutti gli utenti con ruolo **admin** registrati nell'applicazione. Non esiste una variabile d'ambiente per specificare i destinatari: sono determinati automaticamente dal database.
+
+#### Riepilogo completo variabili
+
+| Chiave | Obbligatoria | Default (Dockerfile) |
+|--------|:------------:|----------------------|
+| `JWT_SECRET` | Si | — |
+| `PORT` | No | `3002` |
+| `DB_PATH` | No | `/data/db.sqlite` |
+| `NODE_ENV` | No | `production` |
+| `SMTP_HOST` | No | — |
+| `SMTP_PORT` | No | `587` |
+| `SMTP_USER` | No | — |
+| `SMTP_PASS` | No | — |
+| `SMTP_FROM` | No | `SMTP_USER` |
+| `CHANGELOG_EMAIL_INTERVAL` | No | `daily` |
 
 ### Come generare il JWT_SECRET
 
@@ -360,14 +394,15 @@ Ripeti gli Step 3-9 con le seguenti differenze:
 | **FQDN** | `https://trust.4piemai.it` | `https://trust-preprod.4piemai.it` |
 | **Nome volume** | `trust-prod-data` | `trust-preprod-data` |
 | **JWT_SECRET** | *(valore A)* | *(valore B, diverso da A)* |
-| **PORT** | `3002` | `3002` |
-| **DB_PATH** | `/data/db.sqlite` | `/data/db.sqlite` |
+| **SMTP_HOST** | *(stesso o diverso)* | *(stesso o diverso)* |
+| **SMTP_USER** | *(credenziali SMTP)* | *(credenziali SMTP)* |
+| **SMTP_PASS** | *(password SMTP)* | *(password SMTP)* |
 
 ### Dettaglio degli step per preprod
 
 **Step 3 (Risorsa):** Crea una nuova risorsa su Coolify. Seleziona lo stesso repository ma imposta il branch su quello di sviluppo attivo (es. `refactor_*`). Seleziona come Environment un valore diverso da Production (es. **Staging** o **Development**).
 
-**Step 4 (Variabili):** Configura le stesse variabili d'ambiente, ma genera un `JWT_SECRET` nuovo e diverso da quello di produzione.
+**Step 4 (Variabili):** Configura le stesse variabili d'ambiente, ma genera un `JWT_SECRET` nuovo e diverso da quello di produzione. Le variabili SMTP possono essere le stesse della produzione (stesse credenziali email) oppure diverse se vuoi usare un mittente diverso per la preprod.
 
 **Step 5 (Storage):** Configura il volume con nome `trust-preprod-data` e destination path `/data`.
 
@@ -536,8 +571,11 @@ Se entrambe le istanze (produzione e pre-produzione) presentano errori di databa
 | **Nome Volume** | `trust-prod-data` |
 | **Volume Destination** | `/data` |
 | **JWT_SECRET** | *(generato con `openssl rand -base64 48`)* |
-| **PORT** | `3002` |
-| **DB_PATH** | `/data/db.sqlite` |
+| **SMTP_HOST** | *(opzionale — server SMTP)* |
+| **SMTP_USER** | *(opzionale — username SMTP)* |
+| **SMTP_PASS** | *(opzionale — password SMTP)* |
+| **SMTP_FROM** | *(opzionale — mittente email)* |
+| **CHANGELOG_EMAIL_INTERVAL** | *(opzionale — `daily` o `weekly`)* |
 | **Healthcheck** | `GET /health` sulla porta `3002` |
 
 ### Istanza Pre-Produzione
@@ -552,9 +590,14 @@ Se entrambe le istanze (produzione e pre-produzione) presentano errori di databa
 | **Nome Volume** | `trust-preprod-data` |
 | **Volume Destination** | `/data` |
 | **JWT_SECRET** | *(generato con `openssl rand -base64 48`, diverso dalla produzione)* |
-| **PORT** | `3002` |
-| **DB_PATH** | `/data/db.sqlite` |
+| **SMTP_HOST** | *(opzionale — server SMTP)* |
+| **SMTP_USER** | *(opzionale — username SMTP)* |
+| **SMTP_PASS** | *(opzionale — password SMTP)* |
+| **SMTP_FROM** | *(opzionale — mittente email)* |
+| **CHANGELOG_EMAIL_INTERVAL** | *(opzionale — `daily` o `weekly`)* |
 | **Healthcheck** | `GET /health` sulla porta `3002` |
+
+> **Nota:** `PORT`, `DB_PATH` e `NODE_ENV` sono gia impostati nel Dockerfile con i valori corretti. Non serve aggiungerli nelle Environment Variables di Coolify.
 
 ### Checklist rapida pre-deploy
 
@@ -564,9 +607,8 @@ Se entrambe le istanze (produzione e pre-produzione) presentano errori di databa
 | Risorsa Coolify creata | [ ] | [ ] |
 | Branch corretto selezionato | [ ] | [ ] |
 | JWT_SECRET configurato | [ ] | [ ] |
-| PORT=3002 configurata | [ ] | [ ] |
-| DB_PATH=/data/db.sqlite configurata | [ ] | [ ] |
 | Volume persistente con nome univoco | [ ] | [ ] |
 | FQDN configurato con https:// | [ ] | [ ] |
 | Porta esposta 3002 | [ ] | [ ] |
 | Healthcheck verificato | [ ] | [ ] |
+| *(Opzionale)* SMTP configurato per email | [ ] | [ ] |
