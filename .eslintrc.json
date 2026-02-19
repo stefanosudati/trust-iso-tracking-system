@@ -54,7 +54,8 @@
         "flattenRequirements": "readonly",
         "countRequirements": "readonly",
         "lucide": "readonly",
-        "togglePw": "readonly"
+        "togglePw": "readonly",
+        "Tutorial": "readonly"
       }
     }
   ]

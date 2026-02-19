@@ -14,7 +14,7 @@ const DashboardView = {
     return `
     <div class="p-6 space-y-6">
       <!-- Page Title -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 class="text-2xl font-bold text-slate-800">Dashboard</h1>
           <p class="text-slate-500">${project.clientName} - ${cert?.name || ''}</p>

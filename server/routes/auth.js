@@ -54,7 +54,8 @@ router.post('/register', (req, res) => {
         theme: 'default',
         role,
         isApproved: !!isApproved,
-        passwordChangeRequired: false
+        passwordChangeRequired: false,
+        hasSeenTutorial: false
       },
       pendingApproval: !isFirstUser
     });
@@ -96,14 +97,15 @@ router.post('/login', (req, res) => {
       theme: user.theme || 'default',
       role: user.role || 'user',
       isApproved: !!user.is_approved,
-      passwordChangeRequired: !!user.password_change_required
+      passwordChangeRequired: !!user.password_change_required,
+      hasSeenTutorial: !!user.has_seen_tutorial
     }
   });
 });
 
 // GET /api/auth/me
 router.get('/me', requireAuth, (req, res) => {
-  const user = db.prepare('SELECT id, email, name, theme, role, is_approved, password_change_required, created_at FROM users WHERE id = ?').get(req.userId);
+  const user = db.prepare('SELECT id, email, name, theme, role, is_approved, password_change_required, has_seen_tutorial, created_at FROM users WHERE id = ?').get(req.userId);
   if (!user) {
     return res.status(404).json({ error: 'Utente non trovato' });
   }
@@ -116,6 +118,7 @@ router.get('/me', requireAuth, (req, res) => {
       role: user.role || 'user',
       isApproved: !!user.is_approved,
       passwordChangeRequired: !!user.password_change_required,
+      hasSeenTutorial: !!user.has_seen_tutorial,
       createdAt: user.created_at
     }
   });
@@ -159,6 +162,12 @@ router.put('/password', requireAuth, (req, res) => {
   const hash = bcrypt.hashSync(newPassword, 12);
   db.prepare('UPDATE users SET password_hash = ?, password_change_required = 0 WHERE id = ?').run(hash, req.userId);
   res.json({ message: 'Password aggiornata con successo' });
+});
+
+// PUT /api/auth/tutorial-complete
+router.put('/tutorial-complete', requireAuth, (req, res) => {
+  db.prepare('UPDATE users SET has_seen_tutorial = 1 WHERE id = ?').run(req.userId);
+  res.json({ hasSeenTutorial: true });
 });
 
 module.exports = router;

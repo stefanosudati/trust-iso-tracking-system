@@ -35,11 +35,11 @@ const RequirementView = {
       </div>
 
       <!-- Title + Changelog Button -->
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h1 class="text-xl font-bold text-slate-800">
           <span style="color: var(--primary-text-light);">${reqId}</span> ${req.title}
         </h1>
-        <button id="btn-open-changelog" class="btn-secondary text-sm">
+        <button id="btn-open-changelog" class="btn-secondary text-sm flex-shrink-0 self-start">
           <i data-lucide="history" class="w-4 h-4"></i> Change Log
         </button>
       </div>
@@ -150,7 +150,7 @@ const RequirementView = {
 
         <!-- History -->
         <!-- Save + Nav -->
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="flex gap-2">
             <button type="submit" class="btn-primary">
               <i data-lucide="save" class="w-4 h-4"></i> Salva Valutazione

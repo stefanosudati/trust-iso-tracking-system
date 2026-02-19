@@ -24,7 +24,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 // API Routes
 app.use('/health', require('./routes/health'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/clients', require('./routes/clients'));
 app.use('/api/projects', require('./routes/projects/index'));
+app.use('/api/api-keys', require('./routes/api-keys'));
 app.use('/api/admin', require('./routes/admin'));
 
 // SPA fallback: serve index.html for all non-API routes
@@ -39,4 +41,10 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Trust ISO Tracking System beta`);
   console.log(`  Server in ascolto su http://localhost:${PORT}`);
   console.log(`  Health check: http://localhost:${PORT}/health\n`);
+
+  // Start changelog email scheduler (skip in test environment)
+  if (process.env.NODE_ENV !== 'test' && process.env.DB_PATH !== ':memory:') {
+    const { startScheduler } = require('./scheduler');
+    startScheduler();
+  }
 });

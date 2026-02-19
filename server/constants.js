@@ -22,6 +22,8 @@ module.exports = {
   VALID_PRIORITIES: ['high', 'medium', 'low'],
   VALID_PHASES: ['gap_analysis', 'implementation', 'pre_audit', 'audit', 'certified'],
   VALID_DOC_STATUSES: ['draft', 'approved', 'obsolete'],
+  VALID_AUDIT_CYCLES: ['annual', 'semi-annual'],
+  VALID_CERTIFICATION_STATUSES: ['in_progress', 'certified', 'expired', 'suspended'],
   VALID_THEMES: ['default', 'trust-corporate', 'ocean', 'forest', 'slate'],
 
   // Input limits

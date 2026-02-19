@@ -7,12 +7,12 @@ const ProjectsView = {
     const projects = Store.getProjects().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     return `
     <div class="p-6 space-y-6">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 class="text-2xl font-bold text-slate-800">Progetti</h1>
           <p class="text-slate-500">${projects.length} progett${projects.length === 1 ? 'o' : 'i'} di certificazione</p>
         </div>
-        <button onclick="App.navigate('new-project')" class="btn-primary">
+        <button onclick="App.navigate('new-project')" class="btn-primary flex-shrink-0">
           <i data-lucide="plus" class="w-4 h-4"></i> Nuovo Progetto
         </button>
       </div>
@@ -98,60 +98,78 @@ const ProjectsView = {
       </div>
 
       <form id="project-form" class="space-y-6">
-        <!-- Client Info -->
+        <!-- Client Selector -->
         <div class="bg-white rounded-xl border border-slate-200 p-5">
           <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <i data-lucide="building-2" class="w-5 h-5 text-slate-400"></i> Dati Cliente
+            <i data-lucide="building-2" class="w-5 h-5 text-slate-400"></i> Cliente
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="form-label">Ragione Sociale *</label>
-              <input type="text" name="clientName" value="${project?.clientName || ''}" required class="form-input" placeholder="Es. Acme S.r.l.">
+          <div class="mb-4">
+            <label class="form-label">Seleziona Cliente *</label>
+            <select id="client-selector" name="clientId" class="form-input">
+              <option value="">-- Nuovo cliente --</option>
+              ${Store.getClients().map(c =>
+                `<option value="${c.id}" ${project?.clientId === c.id ? 'selected' : ''}>${c.companyName}${c.sector ? ' (' + c.sector + ')' : ''}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <!-- Inline client fields (shown when "Nuovo cliente" or no client selected) -->
+          <div id="inline-client-fields" class="${project?.clientId ? 'hidden' : ''}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="form-label">Ragione Sociale *</label>
+                <input type="text" id="inline-companyName" name="clientName" value="${project?.clientName || ''}" class="form-input" placeholder="Es. Acme S.r.l.">
+              </div>
+              <div>
+                <label class="form-label">Settore</label>
+                <input type="text" id="inline-sector" name="sector" value="${project?.sector || ''}" class="form-input" placeholder="Es. Manifatturiero">
+              </div>
+              <div>
+                <label class="form-label">Codice ATECO</label>
+                <input type="text" id="inline-ateco" name="ateco" value="${project?.ateco || ''}" class="form-input" placeholder="Es. 25.11.00">
+              </div>
+              <div>
+                <label class="form-label">N. Dipendenti</label>
+                <input type="text" id="inline-employees" name="employees" value="${project?.employees || ''}" class="form-input" placeholder="Es. 50">
+              </div>
+              <div>
+                <label class="form-label">Sede Legale</label>
+                <input type="text" id="inline-legalAddress" name="legalAddress" value="${project?.legalAddress || ''}" class="form-input">
+              </div>
+              <div class="md:col-span-2">
+                <label class="form-label">Sedi Operative</label>
+                <input type="text" id="inline-operationalSites" name="operationalSites" value="${project?.operationalSites || ''}" class="form-input" placeholder="Separare con virgola">
+              </div>
             </div>
-            <div>
-              <label class="form-label">Settore</label>
-              <input type="text" name="sector" value="${project?.sector || ''}" class="form-input" placeholder="Es. Manifatturiero">
-            </div>
-            <div>
-              <label class="form-label">Codice ATECO</label>
-              <input type="text" name="ateco" value="${project?.ateco || ''}" class="form-input" placeholder="Es. 25.11.00">
-            </div>
-            <div>
-              <label class="form-label">N. Dipendenti</label>
-              <input type="text" name="employees" value="${project?.employees || ''}" class="form-input" placeholder="Es. 50">
-            </div>
-            <div>
-              <label class="form-label">Sede Legale</label>
-              <input type="text" name="legalAddress" value="${project?.legalAddress || ''}" class="form-input">
-            </div>
-            <div class="md:col-span-2">
-              <label class="form-label">Sedi Operative</label>
-              <input type="text" name="operationalSites" value="${project?.operationalSites || ''}" class="form-input" placeholder="Separare con virgola">
+
+            <h4 class="font-medium text-slate-700 mt-4 mb-3 flex items-center gap-2">
+              <i data-lucide="user" class="w-4 h-4 text-slate-400"></i> Referente Aziendale
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">Nome e Cognome</label>
+                <input type="text" id="inline-contactName" name="contactName" value="${project?.contactName || ''}" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Ruolo</label>
+                <input type="text" id="inline-contactRole" name="contactRole" value="${project?.contactRole || ''}" class="form-input" placeholder="Es. Responsabile Qualita">
+              </div>
+              <div>
+                <label class="form-label">Email</label>
+                <input type="email" id="inline-contactEmail" name="contactEmail" value="${project?.contactEmail || ''}" class="form-input">
+              </div>
+              <div>
+                <label class="form-label">Telefono</label>
+                <input type="tel" id="inline-contactPhone" name="contactPhone" value="${project?.contactPhone || ''}" class="form-input">
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Contact Info -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5">
-          <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <i data-lucide="user" class="w-5 h-5 text-slate-400"></i> Referente Aziendale
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="form-label">Nome e Cognome</label>
-              <input type="text" name="contactName" value="${project?.contactName || ''}" class="form-input">
-            </div>
-            <div>
-              <label class="form-label">Ruolo</label>
-              <input type="text" name="contactRole" value="${project?.contactRole || ''}" class="form-input" placeholder="Es. Responsabile Qualita">
-            </div>
-            <div>
-              <label class="form-label">Email</label>
-              <input type="email" name="contactEmail" value="${project?.contactEmail || ''}" class="form-input">
-            </div>
-            <div>
-              <label class="form-label">Telefono</label>
-              <input type="tel" name="contactPhone" value="${project?.contactPhone || ''}" class="form-input">
+          <!-- Client summary (shown when an existing client is selected) -->
+          <div id="selected-client-summary" class="${project?.clientId ? '' : 'hidden'}">
+            <div class="bg-slate-50 rounded-lg p-4 text-sm">
+              <div id="client-summary-content" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-600">
+              </div>
             </div>
           </div>
         </div>
@@ -199,6 +217,43 @@ const ProjectsView = {
           </div>
         </div>
 
+        <!-- Certificazione e Rinnovo -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <i data-lucide="award" class="w-5 h-5 text-slate-400"></i> Certificazione e Rinnovo
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Stato Certificazione</label>
+              <select name="certificationStatus" class="form-input">
+                <option value="in_progress" ${project?.certificationStatus === 'in_progress' || !project?.certificationStatus ? 'selected' : ''}>In corso</option>
+                <option value="certified" ${project?.certificationStatus === 'certified' ? 'selected' : ''}>Certificato</option>
+                <option value="expired" ${project?.certificationStatus === 'expired' ? 'selected' : ''}>Scaduto</option>
+                <option value="suspended" ${project?.certificationStatus === 'suspended' ? 'selected' : ''}>Sospeso</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Ciclo Audit</label>
+              <select name="auditCycle" class="form-input">
+                <option value="annual" ${project?.auditCycle === 'annual' || !project?.auditCycle ? 'selected' : ''}>Annuale</option>
+                <option value="semi-annual" ${project?.auditCycle === 'semi-annual' ? 'selected' : ''}>Semestrale</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Data Certificazione</label>
+              <input type="date" name="certificationDate" value="${project?.certificationDate || ''}" class="form-input">
+            </div>
+            <div>
+              <label class="form-label">Scadenza Certificazione</label>
+              <input type="date" name="certificationExpiry" value="${project?.certificationExpiry || ''}" class="form-input">
+            </div>
+            <div>
+              <label class="form-label">Prossimo Audit di Sorveglianza</label>
+              <input type="date" name="nextAuditDate" value="${project?.nextAuditDate || ''}" class="form-input">
+            </div>
+          </div>
+        </div>
+
         <div class="flex items-center gap-3">
           <button type="submit" class="btn-primary">
             <i data-lucide="save" class="w-4 h-4"></i> ${isEdit ? 'Salva Modifiche' : 'Crea Progetto'}
@@ -209,13 +264,99 @@ const ProjectsView = {
     </div>`;
   },
 
+  _renderClientSummary(client) {
+    if (!client) return '';
+    const rows = [
+      ['Ragione Sociale', client.companyName],
+      ['Settore', client.sector],
+      ['ATECO', client.ateco],
+      ['Dipendenti', client.employees],
+      ['Sede Legale', client.legalAddress],
+      ['Sedi Operative', client.operationalSites],
+      ['Referente', client.contactName],
+      ['Ruolo', client.contactRole],
+      ['Email', client.contactEmail],
+      ['Telefono', client.contactPhone],
+    ];
+    return rows
+      .filter(([, v]) => v)
+      .map(([label, value]) => `<div><span class="text-slate-500">${label}:</span> <span class="font-medium text-slate-700">${value}</span></div>`)
+      .join('');
+  },
+
   bindProjectForm(project = null) {
+    // Client selector toggle logic
+    const selector = document.getElementById('client-selector');
+    const inlineFields = document.getElementById('inline-client-fields');
+    const summaryPanel = document.getElementById('selected-client-summary');
+    const summaryContent = document.getElementById('client-summary-content');
+
+    const updateClientView = () => {
+      const selectedId = selector ? parseInt(selector.value) : null;
+      if (selectedId) {
+        const client = Store.getClient(selectedId);
+        if (client) {
+          inlineFields.classList.add('hidden');
+          summaryPanel.classList.remove('hidden');
+          summaryContent.innerHTML = this._renderClientSummary(client);
+        }
+      } else {
+        inlineFields.classList.remove('hidden');
+        summaryPanel.classList.add('hidden');
+      }
+      if (window.lucide) lucide.createIcons();
+    };
+
+    if (selector) {
+      selector.addEventListener('change', updateClientView);
+      // If editing a project with a linked client, show summary immediately
+      if (project?.clientId) {
+        updateClientView();
+      }
+    }
+
     document.getElementById('project-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const data = Object.fromEntries(fd.entries());
+      const selectedClientId = selector ? selector.value : '';
 
       try {
+        if (selectedClientId) {
+          // Existing client selected - send clientId, remove inline client fields
+          data.clientId = parseInt(selectedClientId);
+          delete data.clientName;
+          delete data.sector;
+          delete data.ateco;
+          delete data.employees;
+          delete data.legalAddress;
+          delete data.operationalSites;
+          delete data.contactName;
+          delete data.contactRole;
+          delete data.contactEmail;
+          delete data.contactPhone;
+        } else {
+          // New client: create client first, then link to project
+          const companyName = (data.clientName || '').trim();
+          if (!companyName) {
+            App.showToast('Ragione Sociale è obbligatoria', 'error');
+            return;
+          }
+          const newClient = await Store.createClient({
+            companyName: data.clientName,
+            sector: data.sector,
+            ateco: data.ateco,
+            employees: data.employees,
+            legalAddress: data.legalAddress,
+            operationalSites: data.operationalSites,
+            contactName: data.contactName,
+            contactRole: data.contactRole,
+            contactEmail: data.contactEmail,
+            contactPhone: data.contactPhone,
+          });
+          data.clientId = newClient.id;
+        }
+
         if (project) {
           await Store.updateProject(project.id, data);
           App.showToast('Progetto aggiornato', 'success');

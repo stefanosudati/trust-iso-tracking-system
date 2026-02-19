@@ -5,7 +5,7 @@ const App = {
   currentView: 'dashboard',
   currentClause: null,
   currentRequirement: null,
-  sidebarOpen: true,
+  sidebarOpen: window.innerWidth >= 1024,
 
   async init() {
     // Apply saved theme immediately (before any rendering)
@@ -43,12 +43,29 @@ const App = {
     this.bindGlobalEvents();
     this.render();
     this.autoSaveInterval = setInterval(() => this.autoSaveIndicator(), AUTOSAVE_INTERVAL);
+
+    // Show first-login tutorial if user hasn't seen it yet
+    if (user && user.hasSeenTutorial === false && typeof Tutorial !== 'undefined') {
+      setTimeout(() => Tutorial.start(), 500);
+    }
+  },
+
+  // Close sidebar on mobile after navigating
+  closeMobileSidebar() {
+    if (window.innerWidth < 1024) {
+      this.sidebarOpen = false;
+      document.getElementById('sidebar')?.classList.add('-translate-x-full');
+      document.getElementById('sidebar')?.classList.remove('translate-x-0');
+      document.getElementById('sidebar-overlay')?.classList.add('hidden');
+      document.body.classList.remove('sidebar-open');
+    }
   },
 
   // --- Navigation ---
   navigate(view, params = {}) {
     this.currentView = view;
     Object.assign(this, params);
+    this.closeMobileSidebar();
     this.render();
     // Scroll to top
     document.getElementById('main-content')?.scrollTo(0, 0);
@@ -253,13 +270,12 @@ const App = {
       sidebar.classList.toggle('-translate-x-full', !this.sidebarOpen);
       sidebar.classList.toggle('translate-x-0', this.sidebarOpen);
       overlay.classList.toggle('hidden', !this.sidebarOpen);
+      document.body.classList.toggle('sidebar-open', this.sidebarOpen && window.innerWidth < 1024);
     });
 
     // Mobile sidebar overlay
     document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
-      this.sidebarOpen = false;
-      document.getElementById('sidebar').classList.add('-translate-x-full');
-      document.getElementById('sidebar-overlay').classList.add('hidden');
+      this.closeMobileSidebar();
     });
 
     // Quick search
