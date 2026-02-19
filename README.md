@@ -59,12 +59,12 @@ Sistema web per la gestione e il monitoraggio di percorsi di certificazione ISO 
 |---|---|
 | Frontend | Vanilla JS (SPA, no build tools), Tailwind CSS (CDN), Lucide Icons |
 | Backend | Node.js 20 + Express 4 |
-| Database | SQLite (better-sqlite3) |
+| Database | SQLite (better-sqlite3), WAL mode, auto-recovery da corruzione |
 | Autenticazione | JWT (jsonwebtoken) + bcryptjs + API Keys (SHA-256) |
 | Email | Nodemailer (SMTP opzionale) |
-| Test | Vitest + Supertest |
+| Test | Vitest + Supertest (85 test) |
 | Lint | ESLint |
-| Deploy | Docker multi-stage (Alpine) |
+| Deploy | Docker multi-stage (Alpine), Coolify PaaS |
 
 ## Setup Locale
 
@@ -113,13 +113,15 @@ docker run -d \
   trust-iso
 ```
 
-### Con Docker Compose
+### Con Docker Compose (sviluppo locale)
 
 ```bash
 cp .env.example .env
 # Modifica .env con un JWT_SECRET sicuro
 docker compose up -d
 ```
+
+> **Nota:** Il `docker-compose.yml` usa un volume con nome basato su `COMPOSE_PROJECT_NAME` per evitare conflitti tra istanze multiple. Per il deploy in produzione su Coolify, usa lo Storage persistente di Coolify (vedi sotto).
 
 ### Variabili d'Ambiente
 
@@ -139,10 +141,24 @@ docker compose up -d
 ## Deploy su Coolify
 
 1. **Crea una nuova app** di tipo "Dockerfile"
-2. **Collega il repository** GitHub e seleziona il branch
-3. **Variabili d'ambiente** — Imposta almeno `JWT_SECRET`. **Verifica che `DB_PATH=/data/db.sqlite`** (path assoluto)
-4. **Storage** — Aggiungi un volume persistente: Destination = `/data`
-5. **Deploy** — Coolify fara build e deploy automaticamente. L'healthcheck (`GET /health`) e configurato nel Dockerfile.
+2. **Collega il repository** GitHub e seleziona il branch (`main` per prod, `refactor_*` per preprod)
+3. **Variabili d'ambiente** — Imposta almeno `JWT_SECRET`
+4. **Storage persistente** — Vai nella tab **Storage** e aggiungi un volume:
+   - **Name**: `trust-prod-data` (per prod) o `trust-preprod-data` (per preprod)
+   - **Destination Path**: `/data`
+5. **Dominio** — Configura l'FQDN (es. `https://trust.4piemai.it`)
+6. **Deploy** — Coolify fara build e deploy automaticamente. L'healthcheck (`GET /health`) e configurato nel Dockerfile.
+
+> **IMPORTANTE:** Ogni istanza Coolify (prod e preprod) deve avere un volume con nome DIVERSO. Se condividono lo stesso volume, due container che accedono simultaneamente allo stesso file SQLite causeranno corruzione del database.
+
+### Popolare con dati demo
+
+Dopo il primo deploy, registra un utente (diventa admin), poi dal terminale del container:
+
+```bash
+node scripts/seed-clients-db.js    # Inserisce 8 clienti
+node scripts/seed-projects-db.js   # Inserisce 8 progetti con valutazioni, documenti, milestones
+```
 
 ### Verifica persistenza DB
 
@@ -167,7 +183,7 @@ docker inspect <container> --format '{{json .Mounts}}'
 trust-iso-tracker/
 ├── server/
 │   ├── index.js                    # Express entry point, route mounting
-│   ├── db.js                       # SQLite schema, migrazioni
+│   ├── db.js                       # SQLite schema, migrazioni, auto-recovery
 │   ├── constants.js                # Costanti condivise (fasi, stati, limiti)
 │   ├── email.js                    # Wrapper Nodemailer (SMTP opzionale)
 │   ├── scheduler.js                # Scheduler email riepilogo changelog
@@ -216,9 +232,12 @@ trust-iso-tracker/
 │           ├── settings-view.js    # Impostazioni, temi, password, API keys
 │           └── admin-view.js       # Gestione utenti (admin)
 ├── scripts/
-│   ├── seed-preprod.js             # Script seed per popolare preprod con dati realistici
-│   ├── .env.example                # Template env per seed script
-│   └── .env                        # (gitignored) Credenziali seed
+│   ├── seed-clients-db.js          # Seed clienti diretto nel DB (8 aziende italiane)
+│   ├── seed-projects-db.js         # Seed progetti diretto nel DB (8 progetti con dati completi)
+│   ├── seed-demo.mjs              # Seed via API (5 progetti demo, richiede credenziali)
+│   ├── seed-preprod.js             # Seed via API (popola valutazioni/documenti/milestones)
+│   ├── seed-credentials.json       # (gitignored) Credenziali admin per seed API
+│   └── seed-credentials-example.json
 ├── tests/
 │   ├── health.test.js
 │   ├── api/
@@ -229,10 +248,11 @@ trust-iso-tracker/
 │       ├── validation.test.js      # 9 test validazione input
 │       └── helpers.test.js         # 8 test helpers
 ├── Dockerfile                      # Multi-stage build (Alpine)
-├── docker-compose.yml
+├── docker-compose.yml              # Compose con volume persistente (dev locale)
 ├── .env.example
 ├── .eslintrc.json
 ├── .gitignore
+├── vitest.config.js
 └── package.json
 ```
 
@@ -326,20 +346,41 @@ Authorization: Bearer tiso_<key>
 
 Le API key si generano da **Impostazioni > Chiavi API**. La chiave raw e visibile una sola volta.
 
-## Script Seed (Preprod)
+## Script di Seed
 
-Lo script `scripts/seed-preprod.js` popola l'istanza con dati realistici per testing:
+### Seed diretto nel DB (consigliato per deploy)
+
+Questi script inseriscono direttamente nel database SQLite senza passare dall'API. Ideali per popolare un'istanza appena deployata.
 
 ```bash
-# 1. Configura credenziali
-cp scripts/.env.example scripts/.env
-# Modifica scripts/.env con URL e API key
-
-# 2. Esegui
-node --env-file=scripts/.env scripts/seed-preprod.js
+# Dal terminale del container Docker
+node scripts/seed-clients-db.js    # 8 clienti italiani realistici
+node scripts/seed-projects-db.js   # 8 progetti con valutazioni, documenti, milestones
 ```
 
-Popola 82 valutazioni per progetto, documenti SGQ, milestones completate, con profili diversificati (certified, implementation, gap_analysis, pre_audit, expired).
+Richiedono almeno un utente admin nel DB (registrarsi prima dall'interfaccia web).
+
+### Seed via API (per testing)
+
+```bash
+# seed-demo.mjs — Crea 5 progetti demo
+cp scripts/seed-credentials-example.json scripts/seed-credentials.json
+# Modifica con credenziali admin
+node scripts/seed-demo.mjs https://trust.4piemai.it
+
+# seed-preprod.js — Popola progetti esistenti con dati dettagliati
+SEED_API_URL=https://trust-preprod.4piemai.it/api SEED_API_KEY=tiso_xxx node scripts/seed-preprod.js
+```
+
+## Documentazione
+
+| Documento | Descrizione | Pubblico |
+|---|---|---|
+| [GUIDA_UTENTE.md](GUIDA_UTENTE.md) | Guida completa per utenti e consulenti | Si |
+| [DEVELOPER.md](DEVELOPER.md) | Guida tecnica per sviluppatori | Si |
+| [DEPLOY_COOLIFY.md](DEPLOY_COOLIFY.md) | Guida deploy su Coolify passo-passo | Si |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Diagrammi architetturali del sistema | Si |
+| [CLAUDE.md](CLAUDE.md) | Istruzioni per Claude Code AI | No |
 
 ## Licenza
 
