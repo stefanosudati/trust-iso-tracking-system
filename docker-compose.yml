@@ -21,3 +21,4 @@ services:
 
 volumes:
   db_data:
+    name: ${COMPOSE_PROJECT_NAME:-trust-iso}_db_data

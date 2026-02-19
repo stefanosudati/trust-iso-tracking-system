@@ -12,10 +12,24 @@ if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });
 }
 
-const db = new Database(DB_PATH);
+let db;
+try {
+  db = new Database(DB_PATH);
+  db.pragma('journal_mode = WAL');
+} catch (err) {
+  if (err.code === 'SQLITE_IOERR_SHORT_READ' || err.code === 'SQLITE_CORRUPT' || err.code === 'SQLITE_NOTADB') {
+    console.error(`Database corrotto (${err.code}): ${DB_PATH} — ricreo il file.`);
+    try { fs.unlinkSync(DB_PATH); } catch (_) {}
+    try { fs.unlinkSync(DB_PATH + '-wal'); } catch (_) {}
+    try { fs.unlinkSync(DB_PATH + '-shm'); } catch (_) {}
+    db = new Database(DB_PATH);
+    db.pragma('journal_mode = WAL');
+  } else {
+    throw err;
+  }
+}
 
 // Performance: WAL mode for better concurrency
-db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
 // Create schema
