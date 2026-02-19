@@ -34,15 +34,15 @@ const ClauseView = {
             <div class="flex items-center gap-3">
               ${App.statusIcon(ev.status)}
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="font-semibold text-slate-800 flex-shrink-0">${req.id}</span>
-                  <span class="text-slate-700 truncate">${req.title}</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-slate-800">${req.id}</span>
+                  <span class="text-slate-700">${req.title}</span>
                 </div>
                 ${ev.notes ? `<p class="text-sm text-slate-500 mt-1 truncate">${App.truncate(ev.notes, 80)}</p>` : ''}
               </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                ${ev.priority && ev.status === 'not_implemented' ? `<span class="text-xs px-2 py-0.5 rounded ${App.priorityColor(ev.priority)} hidden sm:inline">${App.priorityLabel(ev.priority)}</span>` : ''}
-                ${ev.deadline ? `<span class="text-xs text-slate-500 hidden sm:inline">${App.formatDate(ev.deadline)}</span>` : ''}
+              <div class="flex items-center gap-2">
+                ${ev.priority && ev.status === 'not_implemented' ? `<span class="text-xs px-2 py-0.5 rounded ${App.priorityColor(ev.priority)}">${App.priorityLabel(ev.priority)}</span>` : ''}
+                ${ev.deadline ? `<span class="text-xs text-slate-500">${App.formatDate(ev.deadline)}</span>` : ''}
                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
               </div>
             </div>

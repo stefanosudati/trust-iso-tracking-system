@@ -2,6 +2,13 @@
 /**
  * Seed script for preprod — populates all 5 projects with realistic data:
  * evaluations, documents, milestones, and changelog entries via API.
+ *
+ * Usage:
+ *   1. Copy scripts/.env.example to scripts/.env and fill in your values
+ *   2. Run: node --env-file=scripts/.env scripts/seed-preprod.js
+ *
+ * Or pass env vars directly:
+ *   SEED_API_URL=https://your-instance.example.com/api SEED_API_KEY=tiso_xxx node scripts/seed-preprod.js
  */
 
 const BASE = process.env.SEED_API_URL;

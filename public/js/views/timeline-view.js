@@ -15,12 +15,12 @@ const TimelineView = {
 
     return `
     <div class="p-6 space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-slate-800">Timeline Progetto</h1>
           <p class="text-slate-500">${App.formatDate(milestones[0]?.date)} - ${App.formatDate(milestones[milestones.length - 1]?.date)}</p>
         </div>
-        <button id="add-milestone-btn" class="btn-secondary flex-shrink-0">
+        <button id="add-milestone-btn" class="btn-secondary">
           <i data-lucide="plus" class="w-4 h-4"></i> Aggiungi Milestone
         </button>
       </div>

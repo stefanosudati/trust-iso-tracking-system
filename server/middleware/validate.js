@@ -2,8 +2,6 @@ const {
   VALID_STATUSES,
   VALID_PRIORITIES,
   VALID_PHASES,
-  VALID_AUDIT_CYCLES,
-  VALID_CERTIFICATION_STATUSES,
   MAX_CLIENT_NAME_LENGTH,
   MAX_NOTES_LENGTH,
 } = require('../constants');
@@ -18,12 +16,6 @@ function validateProjectInput(data) {
   }
   if (data.notes !== undefined && typeof data.notes === 'string' && data.notes.length > MAX_NOTES_LENGTH) {
     errors.push(`notes troppo lunghe (max ${MAX_NOTES_LENGTH})`);
-  }
-  if (data.auditCycle && !VALID_AUDIT_CYCLES.includes(data.auditCycle)) {
-    errors.push(`auditCycle non valido: ${data.auditCycle}`);
-  }
-  if (data.certificationStatus && !VALID_CERTIFICATION_STATUSES.includes(data.certificationStatus)) {
-    errors.push(`certificationStatus non valido: ${data.certificationStatus}`);
   }
   return errors;
 }

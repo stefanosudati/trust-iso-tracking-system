@@ -10,12 +10,12 @@ const DocumentsView = {
 
     return `
     <div class="p-6 space-y-5">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-slate-800">Gestione Documenti</h1>
           <p class="text-slate-500">${docs.length} document${docs.length === 1 ? 'o' : 'i'}</p>
         </div>
-        <button id="add-doc-btn" class="btn-primary flex-shrink-0">
+        <button id="add-doc-btn" class="btn-primary">
           <i data-lucide="plus" class="w-4 h-4"></i> Nuovo Documento
         </button>
       </div>
