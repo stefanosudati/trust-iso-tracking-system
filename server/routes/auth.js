@@ -33,11 +33,16 @@ router.post('/register', (req, res) => {
   }
 
   try {
+    // First user becomes admin automatically
+    const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
+    const isFirstUser = userCount === 0;
+    const role = isFirstUser ? 'admin' : 'user';
+    const isApproved = isFirstUser ? 1 : 0;
+
     const hash = bcrypt.hashSync(password, 12);
     const stmt = db.prepare('INSERT INTO users (email, name, password_hash, role, is_approved, password_change_required) VALUES (?, ?, ?, ?, ?, ?)');
-    const result = stmt.run(email.toLowerCase().trim(), name.trim(), hash, 'user', 0, 0);
+    const result = stmt.run(email.toLowerCase().trim(), name.trim(), hash, role, isApproved, 0);
 
-    // Return token but flag as pending approval
     const token = signToken(result.lastInsertRowid);
     res.status(201).json({
       token,
@@ -46,11 +51,11 @@ router.post('/register', (req, res) => {
         email: email.toLowerCase().trim(),
         name: name.trim(),
         theme: 'default',
-        role: 'user',
-        isApproved: false,
+        role,
+        isApproved: !!isApproved,
         passwordChangeRequired: false
       },
-      pendingApproval: true
+      pendingApproval: !isFirstUser
     });
   } catch (err) {
     if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
