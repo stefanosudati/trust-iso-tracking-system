@@ -179,17 +179,7 @@ const ApiClient = {
   getEvaluation(projectId, requirementId) {
     const project = this.getProject(projectId) || this._activeProject;
     if (!project) return null;
-    return project.evaluations[requirementId] || {
-      status: 'not_evaluated',
-      notes: '',
-      priority: 'medium',
-      responsible: '',
-      deadline: '',
-      actions: [],
-      evidenceNotes: [],
-      auditNotes: '',
-      history: []
-    };
+    return project.evaluations[requirementId] || { ...DEFAULT_EVALUATION };
   },
 
   async saveEvaluation(projectId, requirementId, evaluation) {
@@ -389,5 +379,5 @@ const ApiClient = {
   }
 };
 
-// Backward-compatible alias: all views.js code calling Store.* still works
+// Backward-compatible alias — deprecated, migrate callers to ApiClient directly
 const Store = ApiClient;

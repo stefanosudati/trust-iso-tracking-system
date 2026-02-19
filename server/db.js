@@ -82,7 +82,13 @@ const migrations = [
 ];
 
 for (const sql of migrations) {
-  try { db.exec(sql); } catch (e) { /* Column already exists */ }
+  try {
+    db.exec(sql);
+  } catch (e) {
+    if (!e.message.includes('duplicate column name') && !e.message.includes('already exists')) {
+      console.error('Migration error:', e.message);
+    }
+  }
 }
 
 console.log(`Database SQLite inizializzato: ${DB_PATH}`);

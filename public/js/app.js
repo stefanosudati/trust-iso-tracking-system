@@ -42,7 +42,7 @@ const App = {
 
     this.bindGlobalEvents();
     this.render();
-    this.autoSaveInterval = setInterval(() => this.autoSaveIndicator(), 30000);
+    this.autoSaveInterval = setInterval(() => this.autoSaveIndicator(), AUTOSAVE_INTERVAL);
   },
 
   // --- Navigation ---
@@ -462,8 +462,8 @@ const App = {
     requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
     setTimeout(() => {
       toast.classList.add('translate-x-full');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+      setTimeout(() => toast.remove(), TOAST_FADE_MS);
+    }, TOAST_DURATION);
   },
 
   autoSaveIndicator() {

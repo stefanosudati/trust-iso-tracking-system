@@ -5,7 +5,11 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": ["iso", "9001", "certification", "audit", "quality-management"],
   "license": "MIT",
@@ -15,5 +19,10 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "vitest": "^1.6.0",
+    "supertest": "^6.3.4"
   }
 }

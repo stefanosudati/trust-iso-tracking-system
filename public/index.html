@@ -42,16 +42,6 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <!-- jsPDF for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-  <script>
-    if (!window.jspdf) {
-      console.warn('jsPDF CDN primario non disponibile, tentativo CDN alternativo...');
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js';
-      document.head.appendChild(s);
-    }
-  </script>
 
   <style>
     /* ─── Theme CSS Variables (defaults = Blue) ─── */
@@ -329,13 +319,36 @@
     </div>
   </div>
 
-  <!-- Scripts (order matters: iso data -> api client -> themes -> auth -> views -> pdf -> app) -->
+  <!-- Scripts (order matters: data -> core -> view modules -> facade -> export -> app) -->
   <script src="data/iso9001.js"></script>
+
+  <!-- Shared constants -->
+  <script src="js/constants.js"></script>
+
+  <!-- Core -->
   <script src="js/api-client.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/auth.js"></script>
+
+  <!-- View modules -->
+  <script src="js/views/dashboard-view.js"></script>
+  <script src="js/views/projects-view.js"></script>
+  <script src="js/views/project-detail-view.js"></script>
+  <script src="js/views/clause-view.js"></script>
+  <script src="js/views/requirement-view.js"></script>
+  <script src="js/views/documents-view.js"></script>
+  <script src="js/views/timeline-view.js"></script>
+  <script src="js/views/reports-view.js"></script>
+  <script src="js/views/settings-view.js"></script>
+  <script src="js/views/admin-view.js"></script>
+
+  <!-- Views facade (backward compat) -->
   <script src="js/views.js"></script>
-  <script src="js/pdf-export.js"></script>
+
+  <!-- Markdown export -->
+  <script src="js/md-export.js"></script>
+
+  <!-- Main app -->
   <script src="js/app.js"></script>
 </body>
 </html>

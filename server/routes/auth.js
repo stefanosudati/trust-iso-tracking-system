@@ -124,8 +124,8 @@ router.get('/me', requireAuth, (req, res) => {
 // PUT /api/auth/theme
 router.put('/theme', requireAuth, (req, res) => {
   const { theme } = req.body;
-  const validThemes = ['default', 'trust-corporate', 'ocean', 'forest', 'slate'];
-  if (!theme || !validThemes.includes(theme)) {
+  const { VALID_THEMES } = require('../constants');
+  if (!theme || !VALID_THEMES.includes(theme)) {
     return res.status(400).json({ error: 'Tema non valido' });
   }
   db.prepare('UPDATE users SET theme = ? WHERE id = ?').run(theme, req.userId);

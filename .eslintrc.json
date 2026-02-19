@@ -1,0 +1,61 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2020": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "script"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "off",
+    "eqeqeq": ["error", "always"],
+    "no-var": "error",
+    "prefer-const": "warn",
+    "semi": ["warn", "always"],
+    "curly": ["warn", "multi-line"]
+  },
+  "overrides": [
+    {
+      "files": ["server/**/*.js"],
+      "env": { "node": true, "browser": false }
+    },
+    {
+      "files": ["public/**/*.js"],
+      "env": { "browser": true, "node": false },
+      "globals": {
+        "Views": "readonly",
+        "Store": "readonly",
+        "ApiClient": "readonly",
+        "App": "readonly",
+        "AuthUI": "readonly",
+        "ThemeManager": "readonly",
+        "ThemeDefinitions": "readonly",
+        "GuideExport": "readonly",
+        "DashboardView": "readonly",
+        "ProjectsView": "readonly",
+        "ProjectDetailView": "readonly",
+        "ClauseView": "readonly",
+        "RequirementView": "readonly",
+        "DocumentsView": "readonly",
+        "TimelineView": "readonly",
+        "ReportsView": "readonly",
+        "SettingsView": "readonly",
+        "AdminView": "readonly",
+        "DEFAULT_EVALUATION": "readonly",
+        "MANDATORY_DOCS": "readonly",
+        "TOAST_DURATION": "readonly",
+        "TOAST_FADE_MS": "readonly",
+        "AUTOSAVE_INTERVAL": "readonly",
+        "CERTIFICATIONS": "readonly",
+        "ISO_9001_2015": "readonly",
+        "flattenRequirements": "readonly",
+        "countRequirements": "readonly",
+        "lucide": "readonly",
+        "togglePw": "readonly"
+      }
+    }
+  ]
+}
