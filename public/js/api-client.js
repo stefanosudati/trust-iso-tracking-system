@@ -179,17 +179,7 @@ const ApiClient = {
   getEvaluation(projectId, requirementId) {
     const project = this.getProject(projectId) || this._activeProject;
     if (!project) return null;
-    return project.evaluations[requirementId] || {
-      status: 'not_evaluated',
-      notes: '',
-      priority: 'medium',
-      responsible: '',
-      deadline: '',
-      actions: [],
-      evidenceNotes: [],
-      auditNotes: '',
-      history: []
-    };
+    return project.evaluations[requirementId] || { ...DEFAULT_EVALUATION };
   },
 
   async saveEvaluation(projectId, requirementId, evaluation) {
@@ -310,6 +300,12 @@ const ApiClient = {
     return stats;
   },
 
+  // ─── Certification Status ────────────────────────────────────
+
+  async getCertificationStatus(projectId) {
+    return await this._fetch('/projects/' + projectId + '/certification-status');
+  },
+
   // ─── Changelog ──────────────────────────────────────────────
 
   async getProjectChangelog(projectId, limit = 100, offset = 0) {
@@ -348,6 +344,20 @@ const ApiClient = {
     await this.loadProjects();
   },
 
+  // ─── Tutorial ───────────────────────────────────────────
+
+  async completeTutorial() {
+    const data = await this._fetch('/auth/tutorial-complete', {
+      method: 'PUT'
+    });
+    // Update local user cache
+    if (this._user) {
+      this._user.hasSeenTutorial = true;
+      localStorage.setItem('trust_iso_user', JSON.stringify(this._user));
+    }
+    return data;
+  },
+
   // ─── Password Change ─────────────────────────────────────
 
   async changePassword(oldPassword, newPassword) {
@@ -383,11 +393,114 @@ const ApiClient = {
     });
   },
 
+  async createUser(name, email) {
+    return await this._fetch('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify({ name, email })
+    });
+  },
+
+  // ─── Admin: Changelog Summary ──────────────────────────────
+
+  async sendChangelogSummary() {
+    return await this._fetch('/admin/send-changelog-summary', {
+      method: 'POST'
+    });
+  },
+
+  // ─── API Keys ──────────────────────────────────────────────
+
+  async getApiKeys() {
+    const data = await this._fetch('/api-keys');
+    return data.apiKeys;
+  },
+
+  async createApiKey(name, expiresInDays) {
+    const body = { name };
+    if (expiresInDays) body.expiresIn = expiresInDays;
+    return await this._fetch('/api-keys', {
+      method: 'POST',
+      body: JSON.stringify(body)
+    });
+  },
+
+  async updateApiKey(id, updates) {
+    const data = await this._fetch('/api-keys/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+    return data.apiKey;
+  },
+
+  async deleteApiKey(id) {
+    return await this._fetch('/api-keys/' + id, {
+      method: 'DELETE'
+    });
+  },
+
+  // ─── Admin: API Keys ─────────────────────────────────────
+
+  async getAdminApiKeys() {
+    const data = await this._fetch('/admin/api-keys');
+    return data.apiKeys;
+  },
+
+  async adminToggleApiKey(id, isActive) {
+    const data = await this._fetch('/admin/api-keys/' + id + '/toggle', {
+      method: 'PUT',
+      body: JSON.stringify({ isActive })
+    });
+    return data.apiKey;
+  },
+
+  // ─── Clients ─────────────────────────────────────────────
+
+  _clients: [],
+
+  async loadClients() {
+    this._clients = await this._fetch('/clients');
+    return this._clients;
+  },
+
+  getClients() {
+    return this._clients;
+  },
+
+  getClient(id) {
+    return this._clients.find(c => c.id === id) || null;
+  },
+
+  async createClient(data) {
+    const client = await this._fetch('/clients', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    this._clients.push(client);
+    // Sort by company name
+    this._clients.sort((a, b) => (a.companyName || '').localeCompare(b.companyName || ''));
+    return client;
+  },
+
+  async updateClient(id, updates) {
+    const updated = await this._fetch('/clients/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+    const idx = this._clients.findIndex(c => c.id === id);
+    if (idx !== -1) this._clients[idx] = updated;
+    return updated;
+  },
+
+  async deleteClient(id) {
+    await this._fetch('/clients/' + id, { method: 'DELETE' });
+    this._clients = this._clients.filter(c => c.id !== id);
+  },
+
   // ─── Stub for backward compatibility ──────────────────────
   init() {
     // No-op: replaced by async App.init() flow
   }
 };
 
-// Backward-compatible alias: all views.js code calling Store.* still works
+// Backward-compatible alias — deprecated, migrate callers to ApiClient directly
 const Store = ApiClient;

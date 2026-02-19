@@ -5,15 +5,31 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "keywords": ["iso", "9001", "certification", "audit", "quality-management"],
+  "keywords": [
+    "iso",
+    "9001",
+    "certification",
+    "audit",
+    "quality-management"
+  ],
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.7.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^8.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "supertest": "^6.3.4",
+    "vitest": "^1.6.0"
   }
 }
