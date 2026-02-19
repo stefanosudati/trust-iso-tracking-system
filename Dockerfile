@@ -20,6 +20,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
 COPY server/ ./server/
 COPY public/ ./public/
+COPY scripts/ ./scripts/
 
 # Data directory for SQLite (mount as volume)
 RUN mkdir -p /data
