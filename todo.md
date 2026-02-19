@@ -1,0 +1,16 @@
+# to-do list
+*Scrivi una guida per l’admin e riscrivi la guida utente viste tutte le feature aggiunte. Fai in modo che la guida utente e la guida admin siano scaricabili in pdf da una pagina nelle impostazioni dell’account. Nella pagina della copertina della guida ci deve essere solo il logo trust con il nome della webapp e la versione
+*Scrivi anche una guida per il developer, da lasciare solo nella codebase, per le operazioni più frequenti sul deployment, sul db e sul resto dell’infrastruttura (container coolify ecc) considera quelle che ti ho chiesto e aggiungi ciò che ritieni opportuno.
+*generare uno schema grafico di come funziona l’app
+*la versione dell’app è beta non è v2.0
+*crea il pulsante dell’occhio vicino alla pwd per mostrare che password ho digitato
+*l’utente admin può battezzare altri utenti admin
+
+## Implementate
+
+* ~~tutti gli utenti hanno accesso a tutti i progetti e possono fare tutto. quando un utente fa qualcosa (aggiorna un qualsiasi record cliccando un bottone implemented o altro) oppure aggiunge una nota, devi tenerne traccia e indicare il log della modifica all'interno della pagina del requisito, dietro un pulsante change log, uno per ogni requisito che fa scorrere una sezione delle pagina da destra e mostra chi ha cambiato cosa. il change log completo per tutti i requisiti deve essere consultabili in una sezione apposita del tab dati progetto~~ — Implementato sistema changelog completo: tabella dedicata `changelog` nel DB che traccia ogni modifica campo per campo (stato, note, priorità, responsabile, scadenza, azioni, ecc.) con utente e timestamp. Pulsante "Change Log" in ogni pagina requisito apre pannello slide-in da destra. Sezione "Change Log Completo" in Dati Progetto con filtro per requisito e paginazione.
+* ~~a parte il backup json, tutte le altre funzioni di report non vanno, non sono proprio cliccabili~~ — Aggiunto error handling robusto: wrapper safePDF con verifica jsPDF, try/catch in tutte le 5 funzioni PDF, fallback CDN alternativo (unpkg) se il primario (cdnjs) fallisce.
+* ~~sistema le parole con gli accenti tipo conformità e criticità (scritte senza accento), controlla anche altre parole che potrebbero avere l'accento~~ — Corretti tutti gli accenti in iso9001.js, views.js, pdf-export.js, GUIDA_UTENTE.md, DEPLOY_COOLIFY.md (conformità, criticità, qualità, attività, responsabilità, necessità, capacità, complessità, disponibilità, integrità, regolarità, finalità, più, già, perché, ecc.)
+* ~~fai in modo che l'applicazione deployata from scratch parta con un utente admin password admin. al primo login chiedi a questo utente di cambiare la password. non ci possono essere due utenti admin~~ — Utente admin@trust-iso.local / admin creato automaticamente al primo avvio. Al primo login viene forzato il cambio password. Il seed controlla che non esistano già admin.
+* ~~implementa la possibilità per ogni utente di cambiare password nelle impostazioni~~ — Form cambio password aggiunto nella pagina Impostazioni (password attuale + nuova + conferma).
+* ~~fai in modo che ogni utente standard debba venire approvato nel pannello di controllo utenti dall'utente admin~~ — I nuovi utenti registrati sono in attesa di approvazione. L'admin vede il pannello "Gestione Utenti" nella sidebar per approvare o eliminare utenti.
