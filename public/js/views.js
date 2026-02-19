@@ -1796,6 +1796,21 @@ const Views = {
           </button>
         </form>
       </div>
+
+      <!-- Guide e Documentazione -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 class="font-semibold text-slate-800 mb-2">Guide e Documentazione</h3>
+        <p class="text-sm text-slate-500 mb-4">Scarica le guide in formato PDF con copertina e indice.</p>
+        <div class="flex flex-wrap gap-3">
+          <button id="btn-user-guide" class="btn-secondary">
+            <i data-lucide="book-open" class="w-4 h-4"></i> Guida Utente
+          </button>
+          ${ApiClient.getUser()?.role === 'admin' ? `
+          <button id="btn-admin-guide" class="btn-secondary">
+            <i data-lucide="shield" class="w-4 h-4"></i> Guida Amministratore
+          </button>` : ''}
+        </div>
+      </div>
     </div>`;
   },
 
@@ -1875,6 +1890,10 @@ const Views = {
       btn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Aggiorna Password';
       if (window.lucide) lucide.createIcons();
     });
+
+    // Guide PDF buttons
+    document.getElementById('btn-user-guide')?.addEventListener('click', () => PDFExport.userGuide());
+    document.getElementById('btn-admin-guide')?.addEventListener('click', () => PDFExport.adminGuide());
   },
 
   // ============================================================
