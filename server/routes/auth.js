@@ -8,6 +8,15 @@ function signToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
+/** Validate password strength: min 8 chars, 1 uppercase, 1 number, 1 symbol */
+function validatePassword(pw) {
+  if (!pw || pw.length < 8) return 'La password deve avere almeno 8 caratteri';
+  if (!/[A-Z]/.test(pw)) return 'La password deve contenere almeno una lettera maiuscola';
+  if (!/[0-9]/.test(pw)) return 'La password deve contenere almeno un numero';
+  if (!/[^A-Za-z0-9]/.test(pw)) return 'La password deve contenere almeno un simbolo';
+  return null;
+}
+
 // POST /api/auth/register
 router.post('/register', (req, res) => {
   const { email, password, name } = req.body;
@@ -15,8 +24,9 @@ router.post('/register', (req, res) => {
   if (!email || !password || !name) {
     return res.status(400).json({ error: 'Email, password e nome sono obbligatori' });
   }
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'La password deve avere almeno 6 caratteri' });
+  const pwError = validatePassword(password);
+  if (pwError) {
+    return res.status(400).json({ error: pwError });
   }
   if (!email.includes('@')) {
     return res.status(400).json({ error: 'Formato email non valido' });
@@ -120,8 +130,9 @@ router.put('/theme', requireAuth, (req, res) => {
 router.put('/password', requireAuth, (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
-  if (!newPassword || newPassword.length < 6) {
-    return res.status(400).json({ error: 'La nuova password deve avere almeno 6 caratteri' });
+  const pwError = validatePassword(newPassword);
+  if (pwError) {
+    return res.status(400).json({ error: pwError });
   }
 
   const user = db.prepare('SELECT password_hash, password_change_required FROM users WHERE id = ?').get(req.userId);

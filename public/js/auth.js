@@ -63,8 +63,8 @@ const AuthUI = {
                      class="form-input" placeholder="nome@azienda.it">
             </div>
             <div>
-              <label class="form-label">Password (min. 6 caratteri)</label>
-              <input type="password" name="password" required minlength="6" autocomplete="new-password"
+              <label class="form-label">Password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
+              <input type="password" name="password" required minlength="8" autocomplete="new-password"
                      class="form-input" placeholder="Scegli una password sicura">
             </div>
             <div id="register-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
@@ -170,13 +170,13 @@ const AuthUI = {
       </div>
       <form id="force-password-form" class="space-y-4">
         <div>
-          <label class="form-label">Nuova password (min. 6 caratteri)</label>
-          <input type="password" name="newPassword" required minlength="6" autocomplete="new-password"
+          <label class="form-label">Nuova password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
+          <input type="password" name="newPassword" required minlength="8" autocomplete="new-password"
                  class="form-input" placeholder="Scegli una password sicura">
         </div>
         <div>
           <label class="form-label">Conferma password</label>
-          <input type="password" name="confirmPassword" required minlength="6"
+          <input type="password" name="confirmPassword" required minlength="8"
                  class="form-input" placeholder="Ripeti la password">
         </div>
         <div id="force-pw-error" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>

@@ -1773,8 +1773,8 @@ const Views = {
             <input type="password" name="oldPassword" required class="form-input" placeholder="La tua password attuale">
           </div>
           <div>
-            <label class="form-label">Nuova password (min. 6 caratteri)</label>
-            <input type="password" name="newPassword" required minlength="6" class="form-input" placeholder="Scegli una nuova password">
+            <label class="form-label">Nuova password (min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo)</label>
+            <input type="password" name="newPassword" required minlength="8" class="form-input" placeholder="Scegli una nuova password">
           </div>
           <div>
             <label class="form-label">Conferma nuova password</label>
