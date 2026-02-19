@@ -4,6 +4,9 @@ node_modules/
 # Environment
 .env
 
+# Seed credentials (contiene password)
+scripts/seed-credentials.json
+
 # Database files
 data/*.sqlite
 data/*.sqlite-wal
