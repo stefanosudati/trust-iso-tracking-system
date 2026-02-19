@@ -1,10 +1,10 @@
 # to-do list
-*Scrivi una guida per l’admin e riscrivi la guida utente viste tutte le feature aggiunte. Fai in modo che la guida utente e la guida admin siano scaricabili in pdf da una pagina nelle impostazioni dell’account. Nella pagina della copertina della guida ci deve essere solo il logo trust con il nome della webapp e la versione
-*Scrivi anche una guida per il developer, da lasciare solo nella codebase, per le operazioni più frequenti sul deployment, sul db e sul resto dell’infrastruttura (container coolify ecc) considera quelle che ti ho chiesto e aggiungi ciò che ritieni opportuno.
-*generare uno schema grafico di come funziona l’app
-*la versione dell’app è beta non è v2.0
-*crea il pulsante dell’occhio vicino alla pwd per mostrare che password ho digitato
-*l’utente admin può battezzare altri utenti admin
+* ~~Scrivi una guida per l'admin e riscrivi la guida utente viste tutte le feature aggiunte. Fai in modo che la guida utente e la guida admin siano scaricabili in pdf da una pagina nelle impostazioni dell'account. Nella pagina della copertina della guida ci deve essere solo il logo trust con il nome della webapp e la versione~~ — Guide utente (12 capitoli) e admin (10 capitoli) scaricabili come PDF dalla pagina Impostazioni, con copertina con logo Trust, nome app e versione beta.
+* ~~Scrivi anche una guida per il developer, da lasciare solo nella codebase, per le operazioni più frequenti sul deployment, sul db e sul resto dell'infrastruttura (container coolify ecc)~~ — Creato DEVELOPER.md con architettura, struttura progetto, stack, setup locale, schema DB, API REST, autenticazione, frontend SPA, Docker, Coolify, seed, troubleshooting.
+* ~~generare uno schema grafico di come funziona l'app~~ — Creato ARCHITECTURE.md con diagrammi ASCII: architettura generale, flusso autenticazione, flusso richieste, struttura SPA, deployment Docker, mappa dipendenze frontend.
+* ~~la versione dell'app è beta non è v2.0~~ — Cambiato "v2.0" in "beta" in server/index.js, public/js/auth.js, package.json (0.1.0-beta).
+* ~~crea il pulsante dell'occhio vicino alla pwd per mostrare che password ho digitato~~ — Aggiunto toggle eye/eye-off su tutti i 7 campi password (login, registrazione, cambio forzato, impostazioni).
+* ~~l'utente admin può battezzare altri utenti admin~~ — Endpoint PUT /api/admin/users/:id/role + pulsanti "Promuovi Admin" e "Retrocedi" nel pannello gestione utenti. Protezione: non puoi modificare il tuo stesso ruolo.
 
 ## Implementate
 
