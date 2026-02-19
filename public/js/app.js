@@ -17,20 +17,18 @@ const App = {
       return;
     }
 
-    try {
-      // Load all projects and clients from server into cache
-      await Promise.all([
-        ApiClient.loadProjects(),
-        ApiClient.loadClients(),
-      ]);
+    // Load projects and clients independently (one failure shouldn't block the other)
+    try { await ApiClient.loadProjects(); } catch (err) { console.error('Errore caricamento progetti:', err); }
+    try { await ApiClient.loadClients(); } catch (err) { console.error('Errore caricamento clienti:', err); }
 
+    try {
       // Restore active project
       const savedId = ApiClient.getActiveProjectId();
       if (savedId) {
         await ApiClient.setActiveProject(savedId);
       }
     } catch (err) {
-      console.error('Errore caricamento dati:', err);
+      console.error('Errore ripristino progetto attivo:', err);
     }
 
     // Show user info in header + sync theme from server
@@ -104,8 +102,8 @@ const App = {
     // Build navigation items
     let html = '';
 
-    // Dashboard
-    html += this.sidebarItem('dashboard', 'Dashboard', 'home', !project);
+    // Panoramica (always goes to overview, clears active project)
+    html += this.sidebarItem('overview', 'Panoramica', 'home', !project && this.currentView === 'dashboard');
 
     // Projects
     html += this.sidebarItem('projects', 'Progetti', 'folder');
@@ -113,6 +111,8 @@ const App = {
     if (project) {
       const cert = CERTIFICATIONS.find(c => c.id === project.certificationId);
       if (cert && cert.clauses.length) {
+        // Project dashboard (stats overview)
+        html += this.sidebarItem('dashboard', 'Dashboard Progetto', 'bar-chart');
         // Project info
         html += this.sidebarItem('project-detail', 'Dati Progetto', 'clipboard');
 
@@ -164,11 +164,17 @@ const App = {
 
     // Bind sidebar navigation
     nav.querySelectorAll('[data-view]').forEach(el => {
-      el.addEventListener('click', (e) => {
+      el.addEventListener('click', async (e) => {
         e.preventDefault();
         const view = el.dataset.view;
         const params = {};
         if (el.dataset.clause) params.currentClause = el.dataset.clause;
+        // "Panoramica" clears active project and shows overview
+        if (view === 'overview') {
+          await Store.setActiveProject(null);
+          this.navigate('dashboard');
+          return;
+        }
         this.navigate(view, params);
       });
     });
@@ -279,6 +285,12 @@ const App = {
     // Mobile sidebar overlay
     document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
       this.closeMobileSidebar();
+    });
+
+    // Header logo click → go to overview
+    document.querySelector('#header .flex.items-center.gap-2')?.addEventListener('click', async () => {
+      await Store.setActiveProject(null);
+      this.navigate('dashboard');
     });
 
     // Quick search

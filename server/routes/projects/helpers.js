@@ -23,6 +23,7 @@ function serializeProject(row) {
     certBody: row.cert_body,
     phase: row.phase,
     notes: row.notes,
+    clientId: row.client_id || null,
     evaluations: JSON.parse(row.evaluations_json || '{}'),
     documents: JSON.parse(row.documents_json || '[]'),
     milestones: JSON.parse(row.milestones_json || '[]'),
@@ -48,6 +49,7 @@ function toColumns(data) {
     cert_body: data.certBody ?? '',
     phase: data.phase ?? 'gap_analysis',
     notes: data.notes ?? '',
+    client_id: data.clientId ?? null,
   };
 }
 

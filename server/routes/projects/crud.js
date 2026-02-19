@@ -29,12 +29,12 @@ router.post('/', (req, res) => {
   try {
     db.prepare(`
       INSERT INTO projects (
-        id, user_id, client_name, sector, ateco, employees, legal_address,
+        id, user_id, client_id, client_name, sector, ateco, employees, legal_address,
         operational_sites, contact_name, contact_role, contact_email, contact_phone,
         certification_id, start_date, target_date, cert_body, phase, notes,
         evaluations_json, documents_json, milestones_json
       ) VALUES (
-        @id, @userId, @client_name, @sector, @ateco, @employees, @legal_address,
+        @id, @userId, @client_id, @client_name, @sector, @ateco, @employees, @legal_address,
         @operational_sites, @contact_name, @contact_role, @contact_email, @contact_phone,
         @certification_id, @start_date, @target_date, @cert_body, @phase, @notes,
         @evaluations_json, @documents_json, @milestones_json
@@ -87,7 +87,7 @@ router.put('/:id', (req, res) => {
 
   db.prepare(`
     UPDATE projects SET
-      client_name = @client_name, sector = @sector, ateco = @ateco,
+      client_id = @client_id, client_name = @client_name, sector = @sector, ateco = @ateco,
       employees = @employees, legal_address = @legal_address,
       operational_sites = @operational_sites, contact_name = @contact_name,
       contact_role = @contact_role, contact_email = @contact_email,
