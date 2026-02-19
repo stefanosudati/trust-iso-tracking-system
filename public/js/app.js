@@ -18,8 +18,11 @@ const App = {
     }
 
     try {
-      // Load all projects from server into cache
-      await ApiClient.loadProjects();
+      // Load all projects and clients from server into cache
+      await Promise.all([
+        ApiClient.loadProjects(),
+        ApiClient.loadClients(),
+      ]);
 
       // Restore active project
       const savedId = ApiClient.getActiveProjectId();
